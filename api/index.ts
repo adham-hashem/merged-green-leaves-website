@@ -253,6 +253,7 @@ app.post('/api/auth/login', async (req, res) => {
       email: user.email
     });
   } catch (error: any) {
+    console.error('Authentication Error in /api/auth/login:', error);
     return res.status(500).json({ message: error.message });
   }
 });
