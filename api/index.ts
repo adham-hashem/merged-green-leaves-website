@@ -36,7 +36,10 @@ function parseConnectionString(str: string) {
 const dbConnectionString = process.env.DB_CONNECTION_STRING || "Host=localhost;Database=leaves_db;Username=postgres;Password=postgres;Port=5432";
 const poolConfig = parseConnectionString(dbConnectionString);
 
-if (poolConfig.host && poolConfig.host !== 'localhost' && poolConfig.host !== '127.0.0.1') {
+if (
+  (poolConfig.host && poolConfig.host !== 'localhost' && poolConfig.host !== '127.0.0.1') ||
+  (poolConfig.connectionString && !poolConfig.connectionString.includes('localhost') && !poolConfig.connectionString.includes('127.0.0.1'))
+) {
   poolConfig.ssl = { rejectUnauthorized: false };
 }
 
