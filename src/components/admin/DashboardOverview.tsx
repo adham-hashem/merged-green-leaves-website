@@ -37,21 +37,18 @@ export default function DashboardOverview({ notifications = [] }: DashboardOverv
 
   const fetchStats = async () => {
     try {
-      const { data: bookings, error } = await api.bookings.getAll();
+      const { data, error } = await api.bookings.getStats();
 
       if (error) throw error;
 
-      const total = bookings?.length || 0;
-      const pending = bookings?.filter((b) => b.status === 'pending').length || 0;
-      const completed = bookings?.filter((b) => b.status === 'completed').length || 0;
-      const contacted = bookings?.filter((b) => b.status === 'contacted').length || 0;
-
-      setStats({
-        totalBookings: total,
-        pendingJobs: pending,
-        completedJobs: completed,
-        contactedCustomers: contacted,
-      });
+      if (data) {
+        setStats({
+          totalBookings: data.totalBookings || 0,
+          pendingJobs: data.pendingJobs || 0,
+          completedJobs: data.completedJobs || 0,
+          contactedCustomers: data.contactedCustomers || 0,
+        });
+      }
     } catch (error) {
       console.error('Error fetching stats:', error);
     } finally {

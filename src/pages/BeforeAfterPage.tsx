@@ -35,44 +35,64 @@ export default function BeforeAfterPage() {
   const [lightboxTab, setLightboxTab] = useState<'before' | 'after'>('after');
 
   const [currentPage, setCurrentPage] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
+  const [stats, setStats] = useState({ total: 0, images: 0, videos: 0 });
   const projectsPerPage = 6;
 
   const handlePrevProject = () => {
     if (!activeLightboxProject) return;
-    const currentIndex = filteredProjects.findIndex((p) => p.id === activeLightboxProject.id);
-    const prevIndex = (currentIndex - 1 + filteredProjects.length) % filteredProjects.length;
-    setActiveLightboxProject(filteredProjects[prevIndex]);
+    const currentIndex = projects.findIndex((p) => p.id === activeLightboxProject.id);
+    const prevIndex = (currentIndex - 1 + projects.length) % projects.length;
+    setActiveLightboxProject(projects[prevIndex]);
   };
 
   const handleNextProject = () => {
     if (!activeLightboxProject) return;
-    const currentIndex = filteredProjects.findIndex((p) => p.id === activeLightboxProject.id);
-    const nextIndex = (currentIndex + 1) % filteredProjects.length;
-    setActiveLightboxProject(filteredProjects[nextIndex]);
+    const currentIndex = projects.findIndex((p) => p.id === activeLightboxProject.id);
+    const nextIndex = (currentIndex + 1) % projects.length;
+    setActiveLightboxProject(projects[nextIndex]);
   };
 
   useEffect(() => {
-    setCurrentPage(1);
-  }, [filterType]);
-
-  useEffect(() => {
-    fetchProjects();
+    fetchStats();
   }, []);
 
-  const fetchProjects = async () => {
+  useEffect(() => {
+    fetchProjects(currentPage, filterType);
+  }, [currentPage, filterType]);
+
+  const fetchStats = async () => {
     try {
-      const { data, error } = await api.projects.getAll();
+      const { data } = await api.projects.getAll();
+      if (data) {
+        setStats({
+          total: data.length,
+          images: data.filter((p: Project) => p.media_type === 'image' || p.media_type === 'both').length,
+          videos: data.filter((p: Project) => p.media_type === 'video' || p.media_type === 'both').length,
+        });
+      }
+    } catch (err) {
+      console.error('Error fetching gallery stats:', err);
+    }
+  };
+
+  const fetchProjects = async (page: number, type: string) => {
+    setLoading(true);
+    try {
+      const { data, error } = await api.projects.getAll(page, projectsPerPage, type);
 
       if (error) throw error;
 
-      const projectsData = data || [];
-      setProjects(projectsData);
+      if (data) {
+        setProjects(data.items || []);
+        setTotalCount(data.totalCount || 0);
 
-      const initialComparisons = new Map();
-      projectsData.forEach((project) => {
-        initialComparisons.set(project.id, { projectId: project.id, sliderPosition: 50 });
-      });
-      setComparisons(initialComparisons);
+        const initialComparisons = new Map();
+        (data.items || []).forEach((project: Project) => {
+          initialComparisons.set(project.id, { projectId: project.id, sliderPosition: 50 });
+        });
+        setComparisons(initialComparisons);
+      }
     } catch (error) {
       console.error('Error fetching projects:', error);
     } finally {
@@ -97,35 +117,13 @@ export default function BeforeAfterPage() {
     setPlayingVideos(newPlaying);
   };
 
-  const filteredProjects = filterType === 'all'
-    ? projects
-    : projects.filter((p) => {
-        if (filterType === 'images') return p.media_type === 'image' || p.media_type === 'both';
-        if (filterType === 'videos') return p.media_type === 'video' || p.media_type === 'both';
-        return true;
-      });
-
-  const totalPages = Math.ceil(filteredProjects.length / projectsPerPage);
-  const indexOfLastProject = currentPage * projectsPerPage;
-  const indexOfFirstProject = indexOfLastProject - projectsPerPage;
-  const currentProjects = filteredProjects.slice(indexOfFirstProject, indexOfLastProject);
-
-  const stats = {
-    total: projects.length,
-    images: projects.filter((p) => p.media_type === 'image' || p.media_type === 'both').length,
-    videos: projects.filter((p) => p.media_type === 'video' || p.media_type === 'both').length,
+  const handleFilterTypeChange = (type: string) => {
+    setFilterType(type);
+    setCurrentPage(1);
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center">
-          <div className="w-16 h-16 border-4 border-green-200 border-t-green-600 rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600 text-lg font-medium">Loading gallery...</p>
-        </div>
-      </div>
-    );
-  }
+  const totalPages = Math.ceil(totalCount / projectsPerPage);
+  const currentProjects = projects;
 
   return (
     <div className="min-h-screen bg-white flex flex-col">
@@ -177,7 +175,7 @@ export default function BeforeAfterPage() {
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 mb-12">
               <div className="flex flex-wrap gap-3">
                 <button
-                  onClick={() => setFilterType('all')}
+                  onClick={() => handleFilterTypeChange('all')}
                   className={`px-6 py-3 rounded-xl font-semibold transition-all flex items-center gap-2 ${
                     filterType === 'all'
                       ? 'bg-green-600 text-white shadow-lg shadow-green-600/30'
@@ -188,7 +186,7 @@ export default function BeforeAfterPage() {
                   All Projects
                 </button>
                 <button
-                  onClick={() => setFilterType('images')}
+                  onClick={() => handleFilterTypeChange('images')}
                   className={`px-6 py-3 rounded-xl font-semibold transition-all flex items-center gap-2 ${
                     filterType === 'images'
                       ? 'bg-green-600 text-white shadow-lg shadow-green-600/30'
@@ -199,7 +197,7 @@ export default function BeforeAfterPage() {
                   Images
                 </button>
                 <button
-                  onClick={() => setFilterType('videos')}
+                  onClick={() => handleFilterTypeChange('videos')}
                   className={`px-6 py-3 rounded-xl font-semibold transition-all flex items-center gap-2 ${
                     filterType === 'videos'
                       ? 'bg-green-600 text-white shadow-lg shadow-green-600/30'
@@ -256,7 +254,7 @@ export default function BeforeAfterPage() {
             </div>
 
             {/* Projects Grid */}
-            {filteredProjects.length === 0 ? (
+            {projects.length === 0 ? (
               <div className="text-center py-16">
                 <div className="max-w-4xl mx-auto">
                   {/* Professional Placeholder */}
@@ -356,40 +354,40 @@ export default function BeforeAfterPage() {
                       <div className="relative overflow-hidden bg-black">
                         {isImageProject && (
                           <div className="relative w-full aspect-[4/3] overflow-hidden">
-                            {/* Before Image with Blur Background */}
+                            {/* After Image (Bottom Layer) */}
                             <div className="absolute inset-0 w-full h-full">
                               <img
-                                src={getMediaUrl(project.before_image_url)}
+                                src={getMediaUrl(project.after_image_url)}
                                 alt=""
                                 className="absolute inset-0 w-full h-full object-cover blur-md opacity-35 scale-105"
                               />
                               <img
-                                src={getMediaUrl(project.before_image_url)}
-                                alt="Before"
+                                src={getMediaUrl(project.after_image_url)}
+                                alt="After"
                                 className="absolute inset-0 w-full h-full object-contain z-10"
                               />
                             </div>
 
-                            {/* After Image with Slider */}
+                            {/* Before Image with clipPath (Top Layer) */}
                             <div
-                              className="absolute inset-0 overflow-hidden transition-all duration-75 z-20"
-                              style={{ width: `${sliderPos}%` }}
+                              className="absolute inset-0 overflow-hidden z-20"
+                              style={{ clipPath: `polygon(0 0, ${sliderPos}% 0, ${sliderPos}% 100%, 0 100%)` }}
                             >
-                              <div className="absolute inset-0 w-full h-full bg-black" style={{ width: `${(100 / (sliderPos || 1)) * 100}%`, maxWidth: 'none' }}>
+                              <div className="absolute inset-0 w-full h-full bg-black">
                                 <img
-                                  src={getMediaUrl(project.after_image_url)}
+                                  src={getMediaUrl(project.before_image_url)}
                                   alt=""
                                   className="absolute inset-0 w-full h-full object-cover blur-md opacity-35 scale-105"
                                 />
                                 <img
-                                  src={getMediaUrl(project.after_image_url)}
-                                  alt="After"
+                                  src={getMediaUrl(project.before_image_url)}
+                                  alt="Before"
                                   className="absolute inset-0 w-full h-full object-contain z-10"
                                 />
                               </div>
                             </div>
 
-                            {/* Slider */}
+                            {/* Slider Bar */}
                             <div
                               className="absolute top-0 bottom-0 w-1 bg-white shadow-2xl cursor-col-resize z-30"
                               style={{ left: `${sliderPos}%` }}

@@ -194,11 +194,23 @@ export const api = {
 
   // Bookings CRUD
   bookings: {
-    async getAll(page?: number, pageSize?: number): Promise<ApiResponse<any>> {
-      const url = page && pageSize
-        ? `${API_URL}/api/bookings?page=${page}&pageSize=${pageSize}`
-        : `${API_URL}/api/bookings`;
+    async getAll(page?: number, pageSize?: number, status?: string): Promise<ApiResponse<any>> {
+      const params = new URLSearchParams();
+      if (page) params.append('page', page.toString());
+      if (pageSize) params.append('pageSize', pageSize.toString());
+      if (status) params.append('status', status);
+      
+      const queryString = params.toString();
+      const url = queryString ? `${API_URL}/api/bookings?${queryString}` : `${API_URL}/api/bookings`;
       const response = await fetch(url, {
+        method: 'GET',
+        headers: getHeaders()
+      });
+      return handleResponse<any>(response);
+    },
+
+    async getStats(): Promise<ApiResponse<any>> {
+      const response = await fetch(`${API_URL}/api/bookings/stats`, {
         method: 'GET',
         headers: getHeaders()
       });
@@ -251,10 +263,14 @@ export const api = {
 
   // Before & After Projects CRUD
   projects: {
-    async getAll(page?: number, pageSize?: number): Promise<ApiResponse<any>> {
-      const url = page && pageSize
-        ? `${API_URL}/api/beforeafterprojects?page=${page}&pageSize=${pageSize}`
-        : `${API_URL}/api/beforeafterprojects`;
+    async getAll(page?: number, pageSize?: number, mediaType?: string): Promise<ApiResponse<any>> {
+      const params = new URLSearchParams();
+      if (page) params.append('page', page.toString());
+      if (pageSize) params.append('pageSize', pageSize.toString());
+      if (mediaType) params.append('mediaType', mediaType);
+      
+      const queryString = params.toString();
+      const url = queryString ? `${API_URL}/api/beforeafterprojects?${queryString}` : `${API_URL}/api/beforeafterprojects`;
       const response = await fetch(url, {
         method: 'GET',
         headers: getHeaders()

@@ -96,6 +96,7 @@ async function initDb() {
         is_active BOOLEAN NOT NULL,
         created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
       );
+      CREATE INDEX IF NOT EXISTS idx_services_is_active_display_order ON services(is_active, display_order);
     `);
     await client.query(`
       CREATE TABLE IF NOT EXISTS bookings (
@@ -113,6 +114,7 @@ async function initDb() {
       );
       CREATE INDEX IF NOT EXISTS idx_bookings_status ON bookings(status);
       CREATE INDEX IF NOT EXISTS idx_bookings_created_at ON bookings(created_at);
+      CREATE INDEX IF NOT EXISTS idx_bookings_status_created_at ON bookings(status, created_at DESC);
     `);
     await client.query(`
       CREATE TABLE IF NOT EXISTS before_after_projects (
@@ -127,6 +129,7 @@ async function initDb() {
         created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
       );
       CREATE INDEX IF NOT EXISTS idx_projects_created_at ON before_after_projects(created_at);
+      CREATE INDEX IF NOT EXISTS idx_projects_media_type_created_at ON before_after_projects(media_type, created_at DESC);
     `);
     await client.query(`
       CREATE TABLE IF NOT EXISTS notifications (
@@ -344,25 +347,61 @@ app.delete('/api/services/:id', authenticateToken, async (req, res) => {
 app.get('/api/bookings', authenticateToken, async (req, res) => {
   const page = req.query.page ? parseInt(req.query.page as string, 10) : null;
   const pageSize = req.query.pageSize ? parseInt(req.query.pageSize as string, 10) : null;
+  const status = req.query.status as string;
 
   try {
+    let queryText = 'SELECT * FROM bookings';
+    let countQueryText = 'SELECT COUNT(*) FROM bookings';
+    const queryParams: any[] = [];
+    const countParams: any[] = [];
+
+    if (status && status !== 'all') {
+      queryText += ' WHERE status = $1';
+      countQueryText += ' WHERE status = $1';
+      queryParams.push(status);
+      countParams.push(status);
+    }
+
+    queryText += ' ORDER BY created_at DESC';
+
     if (page && pageSize) {
       const offset = (page - 1) * pageSize;
-      const countRes = await pool.query('SELECT COUNT(*) FROM bookings');
+      const countRes = await pool.query(countQueryText, countParams);
       const totalCount = parseInt(countRes.rows[0].count, 10);
 
-      const itemsRes = await pool.query(
-        'SELECT * FROM bookings ORDER BY created_at DESC LIMIT $1 OFFSET $2',
-        [pageSize, offset]
-      );
+      queryText += ` LIMIT $${queryParams.length + 1} OFFSET $${queryParams.length + 2}`;
+      queryParams.push(pageSize, offset);
 
+      const itemsRes = await pool.query(queryText, queryParams);
       res.setHeader('X-Pagination-Total-Count', totalCount.toString());
       res.setHeader('Access-Control-Expose-Headers', 'X-Pagination-Total-Count');
       return res.json({ items: itemsRes.rows, totalCount });
     } else {
-      const result = await pool.query('SELECT * FROM bookings ORDER BY created_at DESC');
+      const result = await pool.query(queryText, queryParams);
       return res.json(result.rows);
     }
+  } catch (error: any) {
+    return res.status(500).json({ message: error.message });
+  }
+});
+
+app.get('/api/bookings/stats', authenticateToken, async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT 
+        COUNT(*) as total,
+        COUNT(*) FILTER (WHERE status = 'pending') as pending,
+        COUNT(*) FILTER (WHERE status = 'contacted') as contacted,
+        COUNT(*) FILTER (WHERE status = 'completed') as completed
+      FROM bookings
+    `);
+    const stats = result.rows[0];
+    return res.json({
+      totalBookings: parseInt(stats.total || 0, 10),
+      pendingJobs: parseInt(stats.pending || 0, 10),
+      completedJobs: parseInt(stats.completed || 0, 10),
+      contactedCustomers: parseInt(stats.contacted || 0, 10)
+    });
   } catch (error: any) {
     return res.status(500).json({ message: error.message });
   }
@@ -475,23 +514,38 @@ app.delete('/api/bookings/:id', authenticateToken, async (req, res) => {
 app.get('/api/beforeafterprojects', async (req, res) => {
   const page = req.query.page ? parseInt(req.query.page as string, 10) : null;
   const pageSize = req.query.pageSize ? parseInt(req.query.pageSize as string, 10) : null;
+  const mediaType = req.query.mediaType as string;
 
   try {
+    let queryText = 'SELECT * FROM before_after_projects';
+    let countQueryText = 'SELECT COUNT(*) FROM before_after_projects';
+    const queryParams: any[] = [];
+    const countParams: any[] = [];
+
+    if (mediaType === 'images') {
+      queryText += " WHERE media_type = 'image' OR media_type = 'both'";
+      countQueryText += " WHERE media_type = 'image' OR media_type = 'both'";
+    } else if (mediaType === 'videos') {
+      queryText += " WHERE media_type = 'video' OR media_type = 'both'";
+      countQueryText += " WHERE media_type = 'video' OR media_type = 'both'";
+    }
+
+    queryText += ' ORDER BY created_at DESC';
+
     if (page && pageSize) {
       const offset = (page - 1) * pageSize;
-      const countRes = await pool.query('SELECT COUNT(*) FROM before_after_projects');
+      const countRes = await pool.query(countQueryText, countParams);
       const totalCount = parseInt(countRes.rows[0].count, 10);
 
-      const itemsRes = await pool.query(
-        'SELECT * FROM before_after_projects ORDER BY created_at DESC LIMIT $1 OFFSET $2',
-        [pageSize, offset]
-      );
+      queryText += ` LIMIT $${queryParams.length + 1} OFFSET $${queryParams.length + 2}`;
+      queryParams.push(pageSize, offset);
 
+      const itemsRes = await pool.query(queryText, queryParams);
       res.setHeader('X-Pagination-Total-Count', totalCount.toString());
       res.setHeader('Access-Control-Expose-Headers', 'X-Pagination-Total-Count');
       return res.json({ items: itemsRes.rows, totalCount });
     } else {
-      const result = await pool.query('SELECT * FROM before_after_projects ORDER BY created_at DESC');
+      const result = await pool.query(queryText, queryParams);
       return res.json(result.rows);
     }
   } catch (error: any) {

@@ -24,22 +24,23 @@ export default function BookingManagement() {
   const [filterStatus, setFilterStatus] = useState<string>('all');
 
   const [currentPage, setCurrentPage] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
   const bookingsPerPage = 8;
 
   useEffect(() => {
-    setCurrentPage(1);
-  }, [filterStatus]);
+    fetchBookings(currentPage, filterStatus);
+  }, [currentPage, filterStatus]);
 
-  useEffect(() => {
-    fetchBookings();
-  }, []);
-
-  const fetchBookings = async () => {
+  const fetchBookings = async (page: number, status: string) => {
+    setLoading(true);
     try {
-      const { data, error } = await api.bookings.getAll();
+      const { data, error } = await api.bookings.getAll(page, bookingsPerPage, status);
 
       if (error) throw error;
-      setBookings(data || []);
+      if (data) {
+        setBookings(data.items || []);
+        setTotalCount(data.totalCount || 0);
+      }
     } catch (error) {
       console.error('Error fetching bookings:', error);
     } finally {
@@ -52,7 +53,7 @@ export default function BookingManagement() {
       const { error } = await api.bookings.updateStatus(id, newStatus);
 
       if (error) throw error;
-      fetchBookings();
+      fetchBookings(currentPage, filterStatus);
     } catch (error) {
       console.error('Error updating status:', error);
     }
@@ -65,7 +66,7 @@ export default function BookingManagement() {
       const { error } = await api.bookings.delete(id);
 
       if (error) throw error;
-      fetchBookings();
+      fetchBookings(currentPage, filterStatus);
     } catch (error) {
       console.error('Error deleting booking:', error);
     }
@@ -76,12 +77,13 @@ export default function BookingManagement() {
     setShowModal(true);
   };
 
-  const filteredBookings = filterStatus === 'all' ? bookings : bookings.filter((b) => b.status === filterStatus);
+  const handleFilterStatusChange = (status: string) => {
+    setFilterStatus(status);
+    setCurrentPage(1);
+  };
 
-  const totalPages = Math.ceil(filteredBookings.length / bookingsPerPage);
-  const indexOfLastBooking = currentPage * bookingsPerPage;
-  const indexOfFirstBooking = indexOfLastBooking - bookingsPerPage;
-  const currentBookings = filteredBookings.slice(indexOfFirstBooking, indexOfLastBooking);
+  const totalPages = Math.ceil(totalCount / bookingsPerPage);
+  const currentBookings = bookings;
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -134,7 +136,7 @@ export default function BookingManagement() {
           {['all', 'pending', 'contacted', 'completed'].map((status) => (
             <button
               key={status}
-              onClick={() => setFilterStatus(status)}
+              onClick={() => handleFilterStatusChange(status)}
               className={`px-4 py-2 rounded-lg font-medium transition-all ${
                 filterStatus === status
                   ? 'bg-green-600 text-white'
@@ -146,7 +148,7 @@ export default function BookingManagement() {
           ))}
         </div>
 
-        {filteredBookings.length === 0 ? (
+        {currentBookings.length === 0 ? (
           <div className="text-center py-12">
             <p className="text-gray-600">No bookings found</p>
           </div>
@@ -266,7 +268,7 @@ export default function BookingManagement() {
             setSelectedBooking(null);
           }}
           onUpdate={() => {
-            fetchBookings();
+            fetchBookings(currentPage, filterStatus);
             setShowModal(false);
             setSelectedBooking(null);
           }}
