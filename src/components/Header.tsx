@@ -117,7 +117,14 @@ export default function Header({ activeSection = '' }: HeaderProps) {
                 <Link
                   key={item.id}
                   to={`/#${item.id}`}
-                  onClick={() => setIsMenuOpen(false)}
+                  onClick={(e) => {
+                    if (!isGalleryPage) {
+                      e.preventDefault();
+                      scrollToSection(item.id!);
+                    } else {
+                      setIsMenuOpen(false);
+                    }
+                  }}
                   className={`block w-full text-left px-4 py-3 rounded-lg font-semibold transition-colors ${
                     activeSection === item.id ? 'text-green-600 bg-green-50' : 'text-gray-600 hover:text-green-600 hover:bg-green-50'
                   }`}
