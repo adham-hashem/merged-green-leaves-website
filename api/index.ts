@@ -145,7 +145,7 @@ async function initDb() {
     `);
 
     // Seed Admin User
-    const adminEmail = process.env.ADMIN_EMAIL || 'admin@greenleaves.com';
+    const adminEmail = process.env.ADMIN_EMAIL || 'admin@cambridgegreenleaves.co.uk';
     const adminPassword = process.env.ADMIN_PASSWORD || 'AdminPassword123';
     const adminRes = await client.query('SELECT * FROM users WHERE email = $1', [adminEmail]);
     if (adminRes.rowCount === 0) {

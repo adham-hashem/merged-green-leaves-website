@@ -7,4 +7,4 @@ Disallow: /admin/
 Disallow: /admin/*
 
 # Sitemap Location
-Sitemap: https://cambridgegreenleaves.co.uk/sitemap.xml
+Sitemap: https://www.cambridgegreenleaves.co.uk/sitemap.xml

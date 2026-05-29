@@ -57,7 +57,7 @@ export default function AdminLogin() {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="admin@cambridgegreen.com"
+                placeholder="admin@cambridgegreenleaves.co.uk"
                 className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-green-500 focus:outline-none transition-colors text-gray-900 placeholder-gray-400"
               />
             </div>

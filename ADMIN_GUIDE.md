@@ -4,7 +4,7 @@
 
 ### Admin Login Portal
 - **URL**: `/admin/login` (or direct link to private admin panel)
-- **Email**: `admin@cambridgegreenleaves.com`
+- **Email**: `admin@cambridgegreenleaves.co.uk`
 - **Password**: `GreenLeaves@2025`
 
 **Note**: The admin panel is completely hidden from the public website. No navbar links or public references exist.
