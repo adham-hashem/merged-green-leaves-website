@@ -11,27 +11,27 @@ interface ServiceItem {
 }
 
 const FALLBACK_SERVICES: ServiceItem[] = [
-  { title: 'Landscaping', image: '/landscaping.png' },
-  { title: 'Fencing', image: '/Fencing.png' },
-  { title: 'Turfing', image: '/Turfing.png' },
-  { title: 'Patios', image: '/Patios.png' },
-  { title: 'Tree Surgery', image: '/Tree Surgery.png' },
-  { title: 'Hedges & Shrubs', image: '/Hedges & Shrubs.png' },
-  { title: 'Grass Cutting', image: '/Grass Cutting.png' },
-  { title: 'Garden Clearance', image: '/Garden Clearance.png' },
-  { title: 'Commercial Sites', image: '/Commercial Sites.png' },
+  { title: 'Landscaping', image: '/reducedSizeImages/landscaping.webp' },
+  { title: 'Fencing', image: '/reducedSizeImages/Fencing.webp' },
+  { title: 'Turfing', image: '/reducedSizeImages/Turfing.webp' },
+  { title: 'Patios', image: '/reducedSizeImages/Patios.webp' },
+  { title: 'Tree Surgery', image: '/reducedSizeImages/Tree Surgery.webp' },
+  { title: 'Hedges & Shrubs', image: '/reducedSizeImages/Hedges & Shrubs.webp' },
+  { title: 'Grass Cutting', image: '/reducedSizeImages/Grass Cutting.webp' },
+  { title: 'Garden Clearance', image: '/reducedSizeImages/Garden Clearance.webp' },
+  { title: 'Commercial Sites', image: '/reducedSizeImages/Commercial Sites .webp' },
 ];
 
 const IMAGE_MAPPING: Record<string, string> = {
-  'landscaping': '/landscaping.png',
-  'fencing': '/Fencing.png',
-  'turfing': '/Turfing.png',
-  'patios': '/Patios.png',
-  'tree surgery': '/Tree Surgery.png',
-  'hedges & shrubs': '/Hedges & Shrubs.png',
-  'grass cutting': '/Grass Cutting.png',
-  'garden clearance': '/Garden Clearance.png',
-  'commercial sites': '/Commercial Sites.png'
+  'landscaping': '/reducedSizeImages/landscaping.webp',
+  'fencing': '/reducedSizeImages/Fencing.webp',
+  'turfing': '/reducedSizeImages/Turfing.webp',
+  'patios': '/reducedSizeImages/Patios.webp',
+  'tree surgery': '/reducedSizeImages/Tree Surgery.webp',
+  'hedges & shrubs': '/reducedSizeImages/Hedges & Shrubs.webp',
+  'grass cutting': '/reducedSizeImages/Grass Cutting.webp',
+  'garden clearance': '/reducedSizeImages/Garden Clearance.webp',
+  'commercial sites': '/reducedSizeImages/Commercial Sites .webp'
 };
 
 export default function Services() {
