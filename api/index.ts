@@ -419,8 +419,8 @@ app.get('/api/bookings/:id', authenticateToken, async (req, res) => {
   }
 });
 
-// Helper to send message to Telegram admin chat
-async function sendTelegramNotification(booking: any) {
+// Helper to send message to Telegram admin chat with automatic retries
+async function sendTelegramNotification(booking: any, attempt = 1, maxAttempts = 3) {
   const token = process.env.TELEGRAM_BOT_TOKEN;
   const chatId = process.env.TELEGRAM_ADMIN_CHAT_ID;
 
@@ -458,12 +458,26 @@ async function sendTelegramNotification(booking: any) {
 
     if (!response.ok) {
       const errText = await response.text();
-      console.error(`[Telegram Notifier] Telegram API error: ${response.status} - ${errText}`);
-    } else {
-      console.log('[Telegram Notifier] Notification sent successfully to admin.');
+      throw new Error(`HTTP ${response.status} - ${errText}`);
     }
-  } catch (error) {
-    console.error('[Telegram Notifier] Error calling Telegram API:', error);
+
+    const resData: any = await response.json();
+    if (!resData.ok) {
+      throw new Error(`API responded with ok=false: ${JSON.stringify(resData)}`);
+    }
+
+    console.log('[Telegram Notifier] Notification sent successfully to admin.');
+  } catch (error: any) {
+    console.error(`[Telegram Notifier] Error (Attempt ${attempt}/${maxAttempts}):`, error.message || error);
+
+    if (attempt < maxAttempts) {
+      const delay = attempt * 2000; // 2 seconds, then 4 seconds delay
+      console.log(`[Telegram Notifier] Retrying in ${delay}ms...`);
+      await new Promise(resolve => setTimeout(resolve, delay));
+      return sendTelegramNotification(booking, attempt + 1, maxAttempts);
+    } else {
+      console.error('[Telegram Notifier] Max attempts reached. Notification failed.');
+    }
   }
 }
 
