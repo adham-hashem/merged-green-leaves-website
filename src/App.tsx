@@ -28,6 +28,15 @@ function PublicSite() {
   const [activeSection, setActiveSection] = useState('home');
 
   useEffect(() => {
+    // Dynamic SEO Optimization for Home Page
+    document.title = "Cambridge Green Leaves | Professional Gardening & Landscaping Services in Cambridge";
+    const metaDesc = document.querySelector('meta[name="description"]');
+    if (metaDesc) {
+      metaDesc.setAttribute('content', 'Professional gardening, landscaping, fencing, turfing, tree surgery, hedge trimming, and garden clearance in Cambridge. Transforming gardens and creating beautiful outdoor spaces. Get a free quote today!');
+    }
+  }, []);
+
+  useEffect(() => {
     const handleScroll = () => {
       const sections = ['home', 'services', 'booking', 'contact'];
       const scrollPosition = window.scrollY + 100;

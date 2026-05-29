@@ -54,6 +54,12 @@ export default function BeforeAfterPage() {
   };
 
   useEffect(() => {
+    // Dynamic SEO Optimization
+    document.title = "Our Projects Gallery | Gardening & Landscaping in Cambridge - Cambridge Green Leaves";
+    const metaDesc = document.querySelector('meta[name="description"]');
+    if (metaDesc) {
+      metaDesc.setAttribute('content', 'Explore the stunning before and after transformations of our gardening, landscaping, turfing, and tree surgery projects in Cambridge. Contact us to transform your garden today!');
+    }
     fetchStats();
   }, []);
 
@@ -363,7 +369,7 @@ export default function BeforeAfterPage() {
                               />
                               <img
                                 src={getMediaUrl(project.after_image_url)}
-                                alt="After"
+                                alt={`${project.title} - After Gardening/Landscaping transformation in Cambridge`}
                                 className="absolute inset-0 w-full h-full object-contain z-10"
                               />
                             </div>
@@ -381,7 +387,7 @@ export default function BeforeAfterPage() {
                                 />
                                 <img
                                   src={getMediaUrl(project.before_image_url)}
-                                  alt="Before"
+                                  alt={`${project.title} - Before Gardening/Landscaping transformation in Cambridge`}
                                   className="absolute inset-0 w-full h-full object-contain z-10"
                                 />
                               </div>
@@ -670,7 +676,7 @@ export default function BeforeAfterPage() {
                 <img
                   key={`${lightboxTab}-${activeLightboxProject.id}`}
                   src={getMediaUrl(lightboxTab === 'before' ? activeLightboxProject.before_image_url : activeLightboxProject.after_image_url)}
-                  alt={lightboxTab === 'before' ? 'Before transformation' : 'After transformation'}
+                  alt={lightboxTab === 'before' ? `${activeLightboxProject.title} - Before Gardening/Landscaping transformation in Cambridge` : `${activeLightboxProject.title} - After Gardening/Landscaping transformation in Cambridge`}
                   className="max-w-full max-h-full object-contain rounded-lg shadow-2xl animate-in zoom-in-95 duration-300"
                 />
               )}

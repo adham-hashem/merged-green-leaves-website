@@ -99,7 +99,7 @@ export default function Services() {
                 >
                   <img
                     src={localImage}
-                    alt={service.title}
+                    alt={`${service.title} services in Cambridge - professional local gardening`}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                   />
                   <div className="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition-colors flex items-end p-4">
