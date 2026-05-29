@@ -2,6 +2,7 @@ import { useState, useEffect, lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AdminAuthProvider } from './context/AdminAuthContext';
 import Header from './components/Header';
+import AnnouncementBar from './components/AnnouncementBar';
 import Hero from './components/Hero';
 import Services from './components/Services';
 import BookingForm from './components/BookingForm';
@@ -50,6 +51,7 @@ function PublicSite() {
   return (
     <div className="bg-white">
       <Header activeSection={activeSection} />
+      <AnnouncementBar />
       <main>
         <section id="home">
           <Hero />
