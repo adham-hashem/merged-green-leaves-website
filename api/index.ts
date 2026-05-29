@@ -419,6 +419,54 @@ app.get('/api/bookings/:id', authenticateToken, async (req, res) => {
   }
 });
 
+// Helper to send message to Telegram admin chat
+async function sendTelegramNotification(booking: any) {
+  const token = process.env.TELEGRAM_BOT_TOKEN;
+  const chatId = process.env.TELEGRAM_ADMIN_CHAT_ID;
+
+  if (!token || !chatId) {
+    console.log('[Telegram Notifier] Bot Token or Chat ID not configured. Skipping notification.');
+    return;
+  }
+
+  const notesText = booking.notes ? booking.notes.trim() : 'None';
+  const imageUrlText = booking.image_url ? `📎 <a href="${booking.image_url}">View Attachment</a>` : 'None';
+
+  const message = `🌳 <b>New Booking Received!</b> 🌳\n\n` +
+                  `👤 <b>Client:</b> ${booking.full_name}\n` +
+                  `📞 <b>Phone:</b> ${booking.phone_number}\n` +
+                  `✉️ <b>Email:</b> ${booking.email}\n` +
+                  `📍 <b>Address:</b> ${booking.address}\n` +
+                  `🛠 <b>Service:</b> ${booking.service}\n` +
+                  `💰 <b>Budget:</b> ${booking.budget}\n` +
+                  `📝 <b>Notes:</b> ${notesText}\n` +
+                  `🖼️ <b>Image:</b> ${imageUrlText}\n\n` +
+                  `📅 <i>Submitted at: ${new Date(booking.created_at).toLocaleString('en-GB')}</i>`;
+
+  try {
+    const response = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        chat_id: chatId,
+        text: message,
+        parse_mode: 'HTML',
+      }),
+    });
+
+    if (!response.ok) {
+      const errText = await response.text();
+      console.error(`[Telegram Notifier] Telegram API error: ${response.status} - ${errText}`);
+    } else {
+      console.log('[Telegram Notifier] Notification sent successfully to admin.');
+    }
+  } catch (error) {
+    console.error('[Telegram Notifier] Error calling Telegram API:', error);
+  }
+}
+
 app.post('/api/bookings', async (req, res) => {
   const { full_name, phone_number, email, address, service, budget, notes, image_url } = req.body;
   if (!full_name || !phone_number || !email || !address || !service || !budget) {
@@ -445,7 +493,14 @@ app.post('/api/bookings', async (req, res) => {
     );
 
     await client.query('COMMIT');
-    return res.status(201).json(bookingRes.rows[0]);
+
+    // Trigger Telegram notification in the background (does not block client response)
+    const newBooking = bookingRes.rows[0];
+    sendTelegramNotification(newBooking).catch(err => {
+      console.error('[Telegram Notifier] Background exception in notification queue:', err);
+    });
+
+    return res.status(201).json(newBooking);
   } catch (error: any) {
     await client.query('ROLLBACK');
     return res.status(500).json({ message: error.message });
