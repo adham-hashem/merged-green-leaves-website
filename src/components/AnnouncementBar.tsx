@@ -39,7 +39,7 @@ export default function AnnouncementBar() {
   }, []);
 
   return (
-    <div className="bg-gradient-to-r from-green-700 via-green-600 to-green-700 text-white overflow-hidden py-3 relative">
+    <div className="bg-gradient-to-r from-green-700 via-green-600 to-green-700 text-white overflow-hidden py-3 relative z-10">
       {/* Decorative elements */}
       <div className="absolute inset-0 bg-gradient-to-r from-yellow-400/10 via-transparent to-yellow-400/10"></div>
 
