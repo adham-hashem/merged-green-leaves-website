@@ -41,7 +41,7 @@ export default function AdminLogin() {
       <div className="relative z-10 w-full max-w-md">
         <div className="bg-white rounded-3xl shadow-2xl p-8 sm:p-10">
           <div className="flex justify-center mb-8">
-            <img src="/logo_green_leaves.png" alt="Cambridge Green Leaves" className="h-16 w-auto drop-shadow-lg" />
+            <img src="/reducedSizeImages/logo_green_leaves.webp" alt="Cambridge Green Leaves" className="h-20 w-auto drop-shadow-lg" />
           </div>
 
           <h1 className="text-3xl font-bold text-center text-gray-800 mb-2">Admin Portal</h1>

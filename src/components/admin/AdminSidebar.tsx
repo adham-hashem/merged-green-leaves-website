@@ -50,7 +50,7 @@ export default function AdminSidebar({
             <X size={24} />
           </button>
           <div className="flex items-center gap-3">
-            <img src="/logo_green_leaves.png" alt="Logo" className="h-10 w-auto" />
+            <img src="/reducedSizeImages/logo_green_leaves.webp" alt="Logo" className="h-12 w-auto" />
             <div>
               <h2 className="font-bold text-sm">Cambridge</h2>
               <p className="text-green-100 text-xs">Green Leaves</p>
