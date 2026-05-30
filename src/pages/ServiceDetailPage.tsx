@@ -27,6 +27,7 @@ export default function ServiceDetailPage() {
   useEffect(() => {
     if (id) {
       fetchServiceDetail(id);
+      window.scrollTo(0, 0);
     }
   }, [id]);
 
