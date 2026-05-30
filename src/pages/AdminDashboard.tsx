@@ -7,9 +7,10 @@ import DashboardOverview from '../components/admin/DashboardOverview';
 import BookingManagement from '../components/admin/BookingManagement';
 import BeforeAfterManagement from '../components/admin/BeforeAfterManagement';
 import AdminServices from '../components/admin/AdminServices';
+import AdminBudgets from '../components/admin/AdminBudgets';
 import { Menu, X, Bell, BellRing } from 'lucide-react';
 
-type ActivePage = 'overview' | 'bookings' | 'before-after' | 'services';
+type ActivePage = 'overview' | 'bookings' | 'before-after' | 'services' | 'budgets';
 
 interface Notification {
   id: string;
@@ -109,6 +110,8 @@ export default function AdminDashboard() {
         return <BeforeAfterManagement />;
       case 'services':
         return <AdminServices />;
+      case 'budgets':
+        return <AdminBudgets />;
       default:
         return <DashboardOverview notifications={notifications} />;
     }

@@ -42,7 +42,7 @@ export default function Header({ activeSection = '' }: HeaderProps) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <Link to="/" className="cursor-pointer">
-            <img src="/reducedSizeImages/logo_green_leaves.webp" alt="Cambridge Green Leaves" className="h-14 w-auto drop-shadow-lg" />
+            <img src="/logo_green_leaves.png" alt="Cambridge Green Leaves" className="h-14 w-auto object-contain" />
           </Link>
 
           <nav className="hidden md:flex items-center gap-8">

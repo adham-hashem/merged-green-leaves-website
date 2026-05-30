@@ -24,6 +24,7 @@ export const getMediaUrl = (url: string | undefined | null): string => {
 };
 
 // Entity Interfaces
+// Entity Interfaces
 export interface Service {
   id: string;
   title: string;
@@ -47,6 +48,14 @@ export interface Booking {
   notes?: string;
   image_url?: string | null;
   status: 'pending' | 'contacted' | 'completed';
+  created_at?: string;
+}
+
+export interface BudgetOption {
+  id: string;
+  value: string;
+  display_order: number;
+  is_active: boolean;
   created_at?: string;
 }
 
@@ -346,6 +355,41 @@ export const api = {
 
     async delete(id: string): Promise<ApiResponse<void>> {
       const response = await fetch(`${API_URL}/api/notifications/${id}`, {
+        method: 'DELETE',
+        headers: getHeaders()
+      });
+      return handleResponse<void>(response);
+    }
+  },
+
+  // Budgets CRUD
+  budgets: {
+    async getAll(activeOnly = false): Promise<ApiResponse<BudgetOption[]>> {
+      const endpoint = `${API_URL}/api/budgets${activeOnly ? '?activeOnly=true' : ''}`;
+      const response = await fetch(endpoint, {
+        method: 'GET',
+        headers: getHeaders()
+      });
+      return handleResponse<BudgetOption[]>(response);
+    },
+    async create(budget: Partial<BudgetOption>): Promise<ApiResponse<BudgetOption>> {
+      const response = await fetch(`${API_URL}/api/budgets`, {
+        method: 'POST',
+        headers: getHeaders(),
+        body: JSON.stringify(budget)
+      });
+      return handleResponse<BudgetOption>(response);
+    },
+    async update(id: string, budget: Partial<BudgetOption>): Promise<ApiResponse<BudgetOption>> {
+      const response = await fetch(`${API_URL}/api/budgets/${id}`, {
+        method: 'PUT',
+        headers: getHeaders(),
+        body: JSON.stringify(budget)
+      });
+      return handleResponse<BudgetOption>(response);
+    },
+    async delete(id: string): Promise<ApiResponse<void>> {
+      const response = await fetch(`${API_URL}/api/budgets/${id}`, {
         method: 'DELETE',
         headers: getHeaders()
       });

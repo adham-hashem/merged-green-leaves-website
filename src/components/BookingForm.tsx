@@ -1,15 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import { api, API_URL, getMediaUrl } from '../lib/api';
+import { api, API_URL, getMediaUrl, Service } from '../lib/api';
 import { CheckCircle, Upload, X } from 'lucide-react';
-
-const budgets = [
-  'Under £500',
-  '£500 - £1,000',
-  '£1,000 - £2,500',
-  '£2,500 - £5,000',
-  'Over £5,000',
-];
 
 export default function BookingForm() {
   const [formData, setFormData] = useState({
@@ -26,11 +18,13 @@ export default function BookingForm() {
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [uploadedImageUrl, setUploadedImageUrl] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
-  const [services, setServices] = useState<string[]>([]);
+  const [services, setServices] = useState<Service[]>([]);
+  const [budgets, setBudgets] = useState<string[]>([]);
   const location = useLocation();
 
   useEffect(() => {
     fetchServices();
+    fetchBudgets();
   }, []);
 
   useEffect(() => {
@@ -56,12 +50,12 @@ export default function BookingForm() {
       if (error) throw error;
 
       if (data) {
-        setServices(data.map((s) => s.title));
+        setServices(data);
       }
     } catch (error) {
       console.error('Error fetching services:', error);
       // Fallback services
-      setServices([
+      const fallbackTitles = [
         'Landscaping',
         'Fencing',
         'Turfing',
@@ -71,6 +65,36 @@ export default function BookingForm() {
         'Grass Cutting',
         'Garden Clearance',
         'Commercial Sites',
+      ];
+      setServices(fallbackTitles.map((title, idx) => ({
+        id: String(idx),
+        title,
+        description: '',
+        icon_name: 'Leaf',
+        display_order: idx + 1,
+        is_active: true
+      })));
+    }
+  };
+
+  const fetchBudgets = async () => {
+    try {
+      const { data, error } = await api.budgets.getAll(true);
+      if (error) throw error;
+      if (data && data.length > 0) {
+        setBudgets(data.map((b) => b.value));
+      } else {
+        throw new Error('No budgets configured');
+      }
+    } catch (error) {
+      console.error('Error fetching budgets:', error);
+      // Fallback budget options
+      setBudgets([
+        'Under £500',
+        '£500 - £1,000',
+        '£1,000 - £2,500',
+        '£2,500 - £5,000',
+        'Over £5,000',
       ]);
     }
   };
@@ -231,12 +255,12 @@ export default function BookingForm() {
                 value={formData.service}
                 onChange={handleChange}
                 required
-                className="px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-green-500 transition-colors bg-white"
+                className="px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-green-500 transition-colors bg-white text-gray-800 font-medium"
               >
                 <option value="">Select a Service</option>
                 {services.map((svc) => (
-                  <option key={svc} value={svc}>
-                    {svc}
+                  <option key={svc.id} value={svc.title}>
+                    {svc.title}
                   </option>
                 ))}
               </select>
@@ -246,7 +270,7 @@ export default function BookingForm() {
                 value={formData.budget}
                 onChange={handleChange}
                 required
-                className="px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-green-500 transition-colors bg-white"
+                className="px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-green-500 transition-colors bg-white text-gray-800 font-medium"
               >
                 <option value="">Select Budget</option>
                 {budgets.map((b) => (

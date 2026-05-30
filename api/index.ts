@@ -7,6 +7,8 @@ import multer from 'multer';
 import { createClient } from '@supabase/supabase-js';
 import crypto from 'crypto';
 import dotenv from 'dotenv';
+import fs from 'fs';
+import path from 'path';
 
 dotenv.config();
 
@@ -102,6 +104,35 @@ async function initDb() {
       ALTER TABLE services ADD COLUMN IF NOT EXISTS image_url VARCHAR(1000);
       ALTER TABLE services ADD COLUMN IF NOT EXISTS content TEXT;
     `);
+    
+    // Copy the generated transparent borderless logo from brain
+    try {
+      const brainLogo = 'C:\\Users\\HP\\.gemini\\antigravity\\brain\\b3d2205b-a102-47ce-920d-1cd5a90a93c5\\logo_green_leaves_1780133109725.png';
+      const publicDir = path.join(process.cwd(), 'public');
+      const targetLogoPng = path.join(publicDir, 'logo_green_leaves.png');
+      
+      if (fs.existsSync(brainLogo)) {
+        if (!fs.existsSync(publicDir)) {
+          fs.mkdirSync(publicDir, { recursive: true });
+        }
+        fs.copyFileSync(brainLogo, targetLogoPng);
+        console.log('[Logo Copy] Successfully copied logo to public/logo_green_leaves.png');
+      }
+    } catch (logoErr: any) {
+      console.error('[Logo Copy Error]:', logoErr.message);
+    }
+    
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS budgets (
+        id UUID PRIMARY KEY,
+        value VARCHAR(100) NOT NULL UNIQUE,
+        display_order INTEGER NOT NULL,
+        is_active BOOLEAN NOT NULL DEFAULT TRUE,
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+      );
+      CREATE INDEX IF NOT EXISTS idx_budgets_is_active_display_order ON budgets(is_active, display_order);
+    `);
+
     await client.query(`
       CREATE TABLE IF NOT EXISTS bookings (
         id UUID PRIMARY KEY,
@@ -183,6 +214,25 @@ async function initDb() {
         );
       }
       console.log('Default services seeded successfully.');
+    }
+
+    // Seed default budgets
+    const budgetsRes = await client.query('SELECT * FROM budgets');
+    if (budgetsRes.rowCount === 0) {
+      const defaultBudgets = [
+        { value: 'Under £500', display_order: 1 },
+        { value: '£500 - £1,000', display_order: 2 },
+        { value: '£1,000 - £2,500', display_order: 3 },
+        { value: '£2,500 - £5,000', display_order: 4 },
+        { value: 'Over £5,000', display_order: 5 },
+      ];
+      for (const b of defaultBudgets) {
+        await client.query(
+          'INSERT INTO budgets (id, value, display_order, is_active) VALUES ($1, $2, $3, $4)',
+          [crypto.randomUUID(), b.value, b.display_order, true]
+        );
+      }
+      console.log('Default budgets seeded successfully.');
     }
 
     // Seed default content for existing services if it is NULL
@@ -320,7 +370,7 @@ app.post('/api/services', authenticateToken, async (req, res) => {
       'INSERT INTO services (id, title, description, icon_name, display_order, is_active, image_url, content) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *',
       [id, title, description || '', icon_name, display_order, is_active, image_url || null, content || '']
     );
-    return res.status(211).json(result.rows[0]); // C# returns CreatedAtAction (mapped as 201 Created or 200)
+    return res.status(201).json(result.rows[0]);
   } catch (error: any) {
     return res.status(500).json({ message: error.message });
   }
@@ -339,6 +389,73 @@ app.put('/api/services/:id', authenticateToken, async (req, res) => {
     );
     if (result.rowCount === 0) {
       return res.status(404).json({ message: 'Service not found.' });
+    }
+    return res.sendStatus(204);
+  } catch (error: any) {
+    return res.status(500).json({ message: error.message });
+  }
+});
+
+/* ==========================================================================
+   BUDGETS ENDPOINTS (ADMIN-MANAGED)
+   ========================================================================== */
+
+app.get('/api/budgets', async (req, res) => {
+  const activeOnly = req.query.activeOnly === 'true';
+  try {
+    const query = activeOnly
+      ? 'SELECT * FROM budgets WHERE is_active = TRUE ORDER BY display_order'
+      : 'SELECT * FROM budgets ORDER BY display_order';
+    const result = await pool.query(query);
+    return res.json(result.rows);
+  } catch (error: any) {
+    return res.status(500).json({ message: error.message });
+  }
+});
+
+app.post('/api/budgets', authenticateToken, async (req, res) => {
+  const { value, display_order, is_active } = req.body;
+  if (!value || display_order === undefined || is_active === undefined) {
+    return res.status(400).json({ message: 'Value, display_order, and is_active are required.' });
+  }
+
+  try {
+    const id = crypto.randomUUID();
+    const result = await pool.query(
+      'INSERT INTO budgets (id, value, display_order, is_active) VALUES ($1, $2, $3, $4) RETURNING *',
+      [id, value, display_order, is_active]
+    );
+    return res.status(201).json(result.rows[0]);
+  } catch (error: any) {
+    return res.status(500).json({ message: error.message });
+  }
+});
+
+app.put('/api/budgets/:id', authenticateToken, async (req, res) => {
+  const { value, display_order, is_active } = req.body;
+  if (!value || display_order === undefined || is_active === undefined) {
+    return res.status(400).json({ message: 'Value, display_order, and is_active are required.' });
+  }
+
+  try {
+    const result = await pool.query(
+      'UPDATE budgets SET value = $1, display_order = $2, is_active = $3 WHERE id = $4 RETURNING *',
+      [value, display_order, is_active, req.params.id]
+    );
+    if (result.rowCount === 0) {
+      return res.status(404).json({ message: 'Budget option not found.' });
+    }
+    return res.sendStatus(204);
+  } catch (error: any) {
+    return res.status(500).json({ message: error.message });
+  }
+});
+
+app.delete('/api/budgets/:id', authenticateToken, async (req, res) => {
+  try {
+    const result = await pool.query('DELETE FROM budgets WHERE id = $1', [req.params.id]);
+    if (result.rowCount === 0) {
+      return res.status(404).json({ message: 'Budget option not found.' });
     }
     return res.sendStatus(204);
   } catch (error: any) {
@@ -523,6 +640,13 @@ app.post('/api/bookings', async (req, res) => {
   const client = await pool.connect();
   try {
     await client.query('BEGIN');
+
+    // Security validation: verify the budget choice exists in the database
+    const budgetCheck = await client.query('SELECT 1 FROM budgets WHERE value = $1 AND is_active = TRUE', [budget]);
+    if (budgetCheck.rowCount === 0) {
+      await client.query('ROLLBACK');
+      return res.status(400).json({ message: 'Security validation failed: invalid budget option.' });
+    }
 
     const id = crypto.randomUUID();
     const bookingRes = await client.query(

@@ -20,6 +20,7 @@ export default function AdminSidebar({
     { id: 'bookings', label: 'Bookings', icon: BookOpen },
     { id: 'before-after', label: 'Before & After', icon: Image },
     { id: 'services', label: 'Services', icon: Wrench },
+    { id: 'budgets', label: 'Budgets', icon: Settings },
   ];
 
   const handleNavClick = (page: string) => {
