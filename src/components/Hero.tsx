@@ -14,7 +14,7 @@ export default function Hero() {
       style={{
         backgroundImage: 'url("/reducedSizeImages/background_homepage.webp")',
         backgroundSize: 'cover',
-        backgroundPosition: 'right',
+        backgroundPosition: '85% center',
       }}
     >
       <div className="absolute inset-0 bg-black/40" />
