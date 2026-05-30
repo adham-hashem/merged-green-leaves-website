@@ -1,4 +1,5 @@
 import { Leaf } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
@@ -94,12 +95,12 @@ export default function Footer() {
               </div>
             </div>
             <div className="flex gap-6 mt-4 sm:mt-0">
-              <a href="#" className="hover:text-green-400 transition-colors">
+              <Link to="/privacy" className="hover:text-green-400 transition-colors">
                 Privacy Policy
-              </a>
-              <a href="#" className="hover:text-green-400 transition-colors">
+              </Link>
+              <Link to="/terms" className="hover:text-green-400 transition-colors">
                 Terms of Service
-              </a>
+              </Link>
             </div>
           </div>
         </div>

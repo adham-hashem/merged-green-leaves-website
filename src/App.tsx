@@ -14,6 +14,8 @@ const BeforeAfterPage = lazy(() => import('./pages/BeforeAfterPage'));
 const AdminLogin = lazy(() => import('./pages/AdminLogin'));
 const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
 const ServiceDetailPage = lazy(() => import('./pages/ServiceDetailPage'));
+const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicy'));
+const TermsOfService = lazy(() => import('./pages/TermsOfService'));
 
 // Loading spinner component
 const PageLoader = () => (
@@ -82,16 +84,16 @@ function PublicSite() {
       <Header activeSection={activeSection} />
       <AnnouncementBar />
       <main>
-        <section id="home" className="scroll-mt-20">
+        <section id="home" className="scroll-mt-[72px]">
           <Hero />
         </section>
-        <section id="services" className="scroll-mt-20">
+        <section id="services" className="scroll-mt-[72px]">
           <Services />
         </section>
-        <section id="booking" className="scroll-mt-20">
+        <section id="booking" className="scroll-mt-[72px]">
           <BookingForm />
         </section>
-        <section id="contact" className="scroll-mt-20">
+        <section id="contact" className="scroll-mt-[72px]">
           <Contact />
         </section>
       </main>
@@ -135,6 +137,22 @@ function App() {
             element={
               <Suspense fallback={<PageLoader />}>
                 <AdminDashboard />
+              </Suspense>
+            }
+          />
+          <Route
+            path="/privacy"
+            element={
+              <Suspense fallback={<PageLoader />}>
+                <PrivacyPolicy />
+              </Suspense>
+            }
+          />
+          <Route
+            path="/terms"
+            element={
+              <Suspense fallback={<PageLoader />}>
+                <TermsOfService />
               </Suspense>
             }
           />

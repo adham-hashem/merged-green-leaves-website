@@ -42,7 +42,7 @@ export default function Header({ activeSection = '' }: HeaderProps) {
   return (
     <header className="sticky top-0 z-[100] bg-white shadow-md">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-20">
+        <div className="flex justify-between items-center h-[72px]">
           <Link to="/" className="cursor-pointer">
             <img src="/reducedSizeImages/logo_green_leaves.webp" alt="Cambridge Green Leaves" className="h-[60px] w-auto object-contain" />
           </Link>
