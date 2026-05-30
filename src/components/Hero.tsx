@@ -12,7 +12,7 @@ export default function Hero() {
     <div
       className="relative w-full min-h-[600px] flex items-center justify-center overflow-hidden"
       style={{
-        backgroundImage: 'url("/reducedSizeImages/background_home.webp")',
+        backgroundImage: 'url("/reducedSizeImages/background_homepage.webp")',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
       }}
