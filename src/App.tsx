@@ -36,6 +36,12 @@ function PublicSite() {
     if (metaDesc) {
       metaDesc.setAttribute('content', 'Professional gardening, landscaping, fencing, turfing, tree surgery, hedge trimming, and garden clearance in Cambridge. Transforming gardens and creating beautiful outdoor spaces. Get a free quote today!');
     }
+    
+    // Dynamic Canonical Link Update
+    const canonicalLink = document.querySelector('link[rel="canonical"]');
+    if (canonicalLink) {
+      canonicalLink.setAttribute('href', window.location.origin + window.location.pathname);
+    }
   }, []);
 
   useEffect(() => {

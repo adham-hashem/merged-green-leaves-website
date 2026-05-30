@@ -60,6 +60,13 @@ export default function BeforeAfterPage() {
     if (metaDesc) {
       metaDesc.setAttribute('content', 'Explore the stunning before and after transformations of our gardening, landscaping, turfing, and tree surgery projects in Cambridge. Contact us to transform your garden today!');
     }
+    
+    // Dynamic Canonical Link Update
+    const canonicalLink = document.querySelector('link[rel="canonical"]');
+    if (canonicalLink) {
+      canonicalLink.setAttribute('href', window.location.origin + window.location.pathname);
+    }
+    
     fetchStats();
     window.scrollTo(0, 0);
   }, []);

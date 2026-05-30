@@ -49,6 +49,12 @@ export default function ServiceDetailPage() {
             data.description || `Professional ${data.title} services in Cambridge and surrounding areas by Cambridge Green Leaves.`
           );
         }
+        
+        // Dynamic Canonical Link Update
+        const canonicalLink = document.querySelector('link[rel="canonical"]');
+        if (canonicalLink) {
+          canonicalLink.setAttribute('href', window.location.origin + window.location.pathname);
+        }
       } else {
         setError('Service not found');
       }

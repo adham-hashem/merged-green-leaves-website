@@ -1,5 +1,7 @@
 # Cambridge Green Leaves - Site Map
 
+Official Website Domain: [www.cambridgegreenleaves.co.uk](https://www.cambridgegreenleaves.co.uk)
+
 ## Public Website Structure
 
 ### Main Pages
@@ -9,9 +11,12 @@ A clean, focused landing page showcasing the core business.
 
 **Sections (Top to Bottom)**
 - Header with Navigation
-  - Logo
+  - Logo (transparent borders)
   - Navigation Links: Home, Services, Book a Service, **Before & After**, Contact
   - Call Button: 07961228431
+
+- Scrolling Announcement Bar
+  - Positioned directly below the header to display high-priority updates.
   
 - Hero Section
   - Large headline: "Professional Gardening Services in Cambridge"
@@ -97,7 +102,24 @@ A **completely independent, standalone portfolio page** showcasing all project t
 
 ---
 
-#### 3. Admin Portal (Private)
+#### 3. Service Detail Page `/services/:id`
+A dynamic service presentation page loaded via database lookup.
+
+**Page Structure**
+- Header with Navigation
+- Banner Hero Section:
+  - Custom service banner image (admin-uploaded or fallback banner)
+  - Floating service icon and large title
+  - Description and "Request Booking" button linking back to the homepage booking form with pre-filled service parameter
+- Main Grid Content:
+  - Custom paragraphs & bulleted lists parsed dynamically from database `content`
+  - Sidebar: "Need a Professional Quote?" Contact card (with direct phone/email triggers)
+  - Sidebar: "Our Service Guarantee" list
+- Footer
+
+---
+
+#### 4. Admin Portal (Private)
 
 ##### Login Page `/admin/login`
 - Company logo
@@ -116,8 +138,7 @@ A **completely independent, standalone portfolio page** showcasing all project t
 - Bookings
 - Before & After
 - Services
-- Messages (coming soon)
-- Settings (coming soon)
+- Budgets
 - Logout button
 
 **Dashboard Overview**
@@ -157,7 +178,26 @@ A **completely independent, standalone portfolio page** showcasing all project t
 **Services Management**
 - Display of all offered services
 - Service management info
-- Edit services (admin-only)
+- Add and Edit services:
+  - Service Title input (unique)
+  - Display Order input
+  - Card Short Description textarea
+  - Detailed Content textarea (lines starting with `-` or `*` are rendered as lists)
+  - Banner image file upload (to Supabase Storage)
+  - Lucide Icon selection dropdown
+  - Active status checkbox
+- Service deletion capability
+
+**Budgets Management**
+- Add budget option form:
+  - Budget Value Range input (e.g. £500 - £1,000)
+  - Display Order input
+  - Active status checkbox
+- List table of budgets:
+  - Order column
+  - Budget Range Value
+  - Status indicator (Active/Inactive)
+  - Edit & Delete capability (hard delete from database)
 
 ---
 
@@ -168,10 +208,18 @@ A **completely independent, standalone portfolio page** showcasing all project t
 Homepage
 ├── Header: Click "Before & After" → /before-after
 ├── Hero: Click "Book a Service" → Smooth scroll to booking form
-├── Services: Click on service → May open details (if implemented)
-├── Booking: Submit form → Saves to database
+├── Services: Click on service card → /services/:id (opens detailed overview)
+├── Booking: Submit form → Saves to database (validates budget range against active choices in database)
 ├── Contact: Click phone → Call action
 └── Footer: Various links
+```
+
+### From Service Detail Page
+```
+Service Detail Page
+├── Header: Click Logo/Home nav → /
+├── Sidebar: Click Call/Email → Actions
+└── Click "Request Booking" / "Book Now" → / with pre-filled service param (scrolls to booking form)
 ```
 
 ### From Before & After Gallery
@@ -192,7 +240,8 @@ Admin Portal (Private)
 │   ├── Dashboard → Overview
 │   ├── Bookings → Management table
 │   ├── Before & After → Gallery upload
-│   ├── Services → Service display
+│   ├── Services → Service display and banner upload
+│   ├── Budgets → Budget option configuration
 │   └── Logout → /admin/login
 └── Protected routes (auto-redirect if not authenticated)
 ```
@@ -205,6 +254,7 @@ Admin Portal (Private)
 |------|-----|---------|--------|
 | Homepage | `/` | Main landing page | Public |
 | Before & After Gallery | `/before-after` | Project portfolio | Public |
+| Service Detail Page | `/services/:id` | Custom service description | Public |
 | Admin Login | `/admin/login` | Authentication | Semi-public (intentionally unlisted) |
 | Admin Dashboard | `/admin` | Management portal | Private (auth required) |
 | Fallback | `*` | Any invalid URL | Redirects to `/` |
@@ -214,9 +264,14 @@ Admin Portal (Private)
 ## SEO & Meta Structure
 
 ### Homepage
-- Title: "Cambridge Green Leaves | Professional Gardening Services"
-- Description: "Expert landscaping, garden design, and maintenance in Cambridge"
-- Keywords: landscaping, garden design, Cambridge, services
+- Title: "Cambridge Green Leaves | Professional Gardening & Landscaping Services in Cambridge"
+- Description: "Professional gardening, landscaping, fencing, turfing, tree surgery, hedge trimming, and garden clearance in Cambridge. Transforming gardens and creating beautiful outdoor spaces. Get a free quote today!"
+- Keywords: landscaping, gardening, fencing, turfing, tree surgery, Cambridge, garden clearance
+
+### Service Detail Page
+- Title: "[Service Name] Services in Cambridge | Cambridge Green Leaves"
+- Description: Custom description entered by administrator, or dynamic fallback text
+- Keywords: service-specific keywords (e.g. landscaping, garden design)
 
 ### Gallery Page
 - Title: "Before & After Gallery | Cambridge Green Leaves"
