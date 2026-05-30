@@ -20,6 +20,7 @@ export default function BookingForm() {
   const [uploading, setUploading] = useState(false);
   const [services, setServices] = useState<Service[]>([]);
   const [budgets, setBudgets] = useState<string[]>([]);
+  const [customBudget, setCustomBudget] = useState('');
   const location = useLocation();
 
   useEffect(() => {
@@ -101,7 +102,13 @@ export default function BookingForm() {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData((prev) => {
+      const updated = { ...prev, [name]: value };
+      if (name === 'budget' && value !== 'Custom') {
+        setCustomBudget('');
+      }
+      return updated;
+    });
   };
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -138,8 +145,16 @@ export default function BookingForm() {
     setIsSubmitting(true);
 
     try {
+      let finalBudget = formData.budget;
+      if (formData.budget === 'Custom') {
+        finalBudget = customBudget.trim() ? `Custom: ${customBudget.trim()}` : 'Custom';
+      } else if (!formData.budget) {
+        finalBudget = '';
+      }
+
       const bookingData = {
         ...formData,
+        budget: finalBudget,
         image_url: uploadedImageUrl,
       };
 
@@ -176,6 +191,7 @@ export default function BookingForm() {
         budget: '',
         notes: '',
       });
+      setCustomBudget('');
       setUploadedImageUrl(null);
 
       setTimeout(() => setSubmitSuccess(false), 5000);
@@ -269,17 +285,30 @@ export default function BookingForm() {
                 name="budget"
                 value={formData.budget}
                 onChange={handleChange}
-                required
                 className="px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-green-500 transition-colors bg-white text-gray-800 font-medium"
               >
-                <option value="">Select Budget</option>
+                <option value="">Select Budget (Optional)</option>
                 {budgets.map((b) => (
                   <option key={b} value={b}>
                     {b}
                   </option>
                 ))}
+                <option value="Custom">Custom Budget</option>
               </select>
             </div>
+
+            {formData.budget === 'Custom' && (
+              <div className="animate-in fade-in slide-in-from-top-2 duration-200">
+                <input
+                  type="text"
+                  placeholder="Enter custom budget (Optional)"
+                  value={customBudget}
+                  onChange={(e) => setCustomBudget(e.target.value)}
+                  maxLength={40}
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-green-500 transition-colors bg-white text-gray-800 font-medium"
+                />
+              </div>
+            )}
 
             <div className="space-y-3">
               <label className="block text-sm font-semibold text-gray-700">

@@ -633,26 +633,31 @@ async function sendTelegramNotification(booking: any, attempt = 1, maxAttempts =
 
 app.post('/api/bookings', async (req, res) => {
   const { full_name, phone_number, email, address, service, budget, notes, image_url } = req.body;
-  if (!full_name || !phone_number || !email || !address || !service || !budget) {
-    return res.status(400).json({ message: 'Full name, phone, email, address, service, and budget are required.' });
+  if (!full_name || !phone_number || !email || !address || !service) {
+    return res.status(400).json({ message: 'Full name, phone, email, address, and service are required.' });
   }
 
   const client = await pool.connect();
   try {
     await client.query('BEGIN');
 
-    // Security validation: verify the budget choice exists in the database
-    const budgetCheck = await client.query('SELECT 1 FROM budgets WHERE value = $1 AND is_active = TRUE', [budget]);
-    if (budgetCheck.rowCount === 0) {
-      await client.query('ROLLBACK');
-      return res.status(400).json({ message: 'Security validation failed: invalid budget option.' });
+    const finalBudget = budget || 'Not Specified';
+
+    // Security validation: verify the budget choice exists in the database OR is a custom budget
+    const isCustom = finalBudget === 'Custom' || finalBudget.startsWith('Custom: ') || finalBudget === 'Other' || finalBudget.startsWith('Other: ') || finalBudget === 'Not Specified';
+    if (!isCustom) {
+      const budgetCheck = await client.query('SELECT 1 FROM budgets WHERE value = $1 AND is_active = TRUE', [finalBudget]);
+      if (budgetCheck.rowCount === 0) {
+        await client.query('ROLLBACK');
+        return res.status(400).json({ message: 'Security validation failed: invalid budget option.' });
+      }
     }
 
     const id = crypto.randomUUID();
     const bookingRes = await client.query(
       `INSERT INTO bookings (id, full_name, phone_number, email, address, service, budget, notes, image_url, status, created_at)
        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING *`,
-      [id, full_name, phone_number, email, address, service, budget, notes || '', image_url || null, 'pending', new Date()]
+      [id, full_name, phone_number, email, address, service, finalBudget, notes || '', image_url || null, 'pending', new Date()]
     );
 
     // Auto-create notification
@@ -684,15 +689,17 @@ app.post('/api/bookings', async (req, res) => {
 
 app.put('/api/bookings/:id', authenticateToken, async (req, res) => {
   const { full_name, phone_number, email, address, service, budget, notes, status } = req.body;
-  if (!full_name || !phone_number || !email || !address || !service || !budget || !status) {
+  if (!full_name || !phone_number || !email || !address || !service || !status) {
     return res.status(400).json({ message: 'Required fields missing for update.' });
   }
+
+  const finalBudget = budget || 'Not Specified';
 
   try {
     const result = await pool.query(
       `UPDATE bookings SET full_name = $1, phone_number = $2, email = $3, address = $4, service = $5,
        budget = $6, notes = $7, status = $8 WHERE id = $9 RETURNING *`,
-      [full_name, phone_number, email, address, service, budget, notes || '', status, req.params.id]
+      [full_name, phone_number, email, address, service, finalBudget, notes || '', status, req.params.id]
     );
     if (result.rowCount === 0) {
       return res.status(404).json({ message: 'Booking not found.' });
