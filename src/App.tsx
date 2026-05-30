@@ -82,16 +82,16 @@ function PublicSite() {
       <Header activeSection={activeSection} />
       <AnnouncementBar />
       <main>
-        <section id="home">
+        <section id="home" className="scroll-mt-20">
           <Hero />
         </section>
-        <section id="services">
+        <section id="services" className="scroll-mt-20">
           <Services />
         </section>
-        <section id="booking">
+        <section id="booking" className="scroll-mt-20">
           <BookingForm />
         </section>
-        <section id="contact">
+        <section id="contact" className="scroll-mt-20">
           <Contact />
         </section>
       </main>

@@ -18,8 +18,10 @@ export default function Header({ activeSection = '' }: HeaderProps) {
     }
     const element = document.getElementById(id);
     if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
       setIsMenuOpen(false);
+      setTimeout(() => {
+        element.scrollIntoView({ behavior: 'smooth' });
+      }, 100);
     }
   };
 
@@ -40,9 +42,9 @@ export default function Header({ activeSection = '' }: HeaderProps) {
   return (
     <header className="sticky top-0 z-[100] bg-white shadow-md">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-24">
+        <div className="flex justify-between items-center h-20">
           <Link to="/" className="cursor-pointer">
-            <img src="/reducedSizeImages/logo_green_leaves.webp" alt="Cambridge Green Leaves" className="h-20 w-auto object-contain" />
+            <img src="/reducedSizeImages/logo_green_leaves.webp" alt="Cambridge Green Leaves" className="h-[70px] w-auto object-contain" />
           </Link>
 
           <nav className="hidden md:flex items-center gap-8">
