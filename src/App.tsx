@@ -13,6 +13,7 @@ import Footer from './components/Footer';
 const BeforeAfterPage = lazy(() => import('./pages/BeforeAfterPage'));
 const AdminLogin = lazy(() => import('./pages/AdminLogin'));
 const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
+const ServiceDetailPage = lazy(() => import('./pages/ServiceDetailPage'));
 
 // Loading spinner component
 const PageLoader = () => (
@@ -91,6 +92,14 @@ function App() {
             element={
               <Suspense fallback={<PageLoader />}>
                 <BeforeAfterPage />
+              </Suspense>
+            }
+          />
+          <Route
+            path="/services/:id"
+            element={
+              <Suspense fallback={<PageLoader />}>
+                <ServiceDetailPage />
               </Suspense>
             }
           />

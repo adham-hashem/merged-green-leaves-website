@@ -99,6 +99,10 @@ async function initDb() {
       CREATE INDEX IF NOT EXISTS idx_services_is_active_display_order ON services(is_active, display_order);
     `);
     await client.query(`
+      ALTER TABLE services ADD COLUMN IF NOT EXISTS image_url VARCHAR(1000);
+      ALTER TABLE services ADD COLUMN IF NOT EXISTS content TEXT;
+    `);
+    await client.query(`
       CREATE TABLE IF NOT EXISTS bookings (
         id UUID PRIMARY KEY,
         full_name VARCHAR(100) NOT NULL,
@@ -180,6 +184,20 @@ async function initDb() {
       }
       console.log('Default services seeded successfully.');
     }
+
+    // Seed default content for existing services if it is NULL
+    await client.query(`
+      UPDATE services SET content = 'Professional landscaping services in Cambridge. We offer bespoke garden design, installation, paving, and flowerbed creation. Our expert landscapers work closely with you to design and construct outdoor spaces that reflect your personality and style, ensuring a clean, modern, and beautiful landscape.' WHERE title = 'Landscaping' AND content IS NULL;
+      UPDATE services SET content = 'High-quality perimeter and decorative fencing installation. We install closeboard, panel, trellis, picket, and custom timber fencing. Our fencing solutions are built with high-grade, pressure-treated timber for long-lasting durability, providing privacy and security for your property.' WHERE title = 'Fencing' AND content IS NULL;
+      UPDATE services SET content = 'Premium turf laying for beautiful, instant green lawns. We source the highest grade local turf, prepare the soil thoroughly, and lay turf with precision to ensure healthy root development. We also advise on lawn care and maintenance.' WHERE title = 'Turfing' AND content IS NULL;
+      UPDATE services SET content = 'Custom patio design and paving installations. We work with natural sandstone, slate, premium porcelain, and concrete flagstones to create stylish patios, pathways, and seating areas. Our sub-base preparations guarantee a level and durable surface.' WHERE title = 'Patios' AND content IS NULL;
+      UPDATE services SET content = 'Expert tree surgery services. We handle tree removal, felling, stump grinding, pruning, crown reduction, and safety assessments. Our qualified team operates with strict safety standards to handle trees of all sizes safely and efficiently.' WHERE title = 'Tree Surgery' AND content IS NULL;
+      UPDATE services SET content = 'Precise hedge trimming and shrub maintenance. We shape, prune, and reduce hedges of any size to keep them neat, dense, and healthy. Regular hedge maintenance keeps your boundaries clean and improves the overall presentation of your garden.' WHERE title = 'Hedges & Shrubs' AND content IS NULL;
+      UPDATE services SET content = 'Regular or one-off lawn mowing and grass cutting. We keep your lawns healthy, striping them professionally. Our services include edging, clipping removal, and lawn health evaluations to ensure green and lush grass throughout the seasons.' WHERE title = 'Grass Cutting' AND content IS NULL;
+      UPDATE services SET content = 'Complete overgrown garden clearing and waste disposal. We remove brambles, ivy, weeds, overgrown trees, and clean up messy gardens. We dispose of all green waste responsibly, leaving your garden clean, tidy, and ready for use.' WHERE title = 'Garden Clearance' AND content IS NULL;
+      UPDATE services SET content = 'Grounds maintenance and commercial landscaping. We maintain business parks, schools, retail yards, residential estates, and shared spaces. Our team delivers professional, reliable garden maintenance to keep commercial sites clean and inviting.' WHERE title = 'Commercial Sites' AND content IS NULL;
+    `);
+
     isDbInitialized = true;
   } catch (err) {
     console.error('Error during DB init/seeding:', err);
@@ -291,7 +309,7 @@ app.get('/api/services/:id', async (req, res) => {
 });
 
 app.post('/api/services', authenticateToken, async (req, res) => {
-  const { title, description, icon_name, display_order, is_active } = req.body;
+  const { title, description, icon_name, display_order, is_active, image_url, content } = req.body;
   if (!title || !icon_name || display_order === undefined || is_active === undefined) {
     return res.status(400).json({ message: 'Title, icon_name, display_order, and is_active are required.' });
   }
@@ -299,8 +317,8 @@ app.post('/api/services', authenticateToken, async (req, res) => {
   try {
     const id = crypto.randomUUID();
     const result = await pool.query(
-      'INSERT INTO services (id, title, description, icon_name, display_order, is_active) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
-      [id, title, description || '', icon_name, display_order, is_active]
+      'INSERT INTO services (id, title, description, icon_name, display_order, is_active, image_url, content) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *',
+      [id, title, description || '', icon_name, display_order, is_active, image_url || null, content || '']
     );
     return res.status(211).json(result.rows[0]); // C# returns CreatedAtAction (mapped as 201 Created or 200)
   } catch (error: any) {
@@ -309,15 +327,15 @@ app.post('/api/services', authenticateToken, async (req, res) => {
 });
 
 app.put('/api/services/:id', authenticateToken, async (req, res) => {
-  const { title, description, icon_name, display_order, is_active } = req.body;
+  const { title, description, icon_name, display_order, is_active, image_url, content } = req.body;
   if (!title || !icon_name || display_order === undefined || is_active === undefined) {
     return res.status(400).json({ message: 'Title, icon_name, display_order, and is_active are required.' });
   }
 
   try {
     const result = await pool.query(
-      'UPDATE services SET title = $1, description = $2, icon_name = $3, display_order = $4, is_active = $5 WHERE id = $6 RETURNING *',
-      [title, description || '', icon_name, display_order, is_active, req.params.id]
+      'UPDATE services SET title = $1, description = $2, icon_name = $3, display_order = $4, is_active = $5, image_url = $6, content = $7 WHERE id = $8 RETURNING *',
+      [title, description || '', icon_name, display_order, is_active, image_url || null, content || '', req.params.id]
     );
     if (result.rowCount === 0) {
       return res.status(404).json({ message: 'Service not found.' });

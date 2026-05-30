@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { api, API_URL, getMediaUrl } from '../lib/api';
 import { CheckCircle, Upload, X } from 'lucide-react';
 
@@ -26,10 +27,27 @@ export default function BookingForm() {
   const [uploadedImageUrl, setUploadedImageUrl] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
   const [services, setServices] = useState<string[]>([]);
+  const location = useLocation();
 
   useEffect(() => {
     fetchServices();
   }, []);
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const serviceParam = params.get('service');
+    if (serviceParam) {
+      setFormData((prev) => ({ ...prev, service: decodeURIComponent(serviceParam) }));
+      
+      // Delay scroll slightly to ensure page has rendered/scrolled from history
+      setTimeout(() => {
+        const element = document.getElementById('booking');
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 300);
+    }
+  }, [location, services]);
 
   const fetchServices = async () => {
     try {

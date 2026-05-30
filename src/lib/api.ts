@@ -31,6 +31,8 @@ export interface Service {
   icon_name: string;
   display_order: number;
   is_active: boolean;
+  image_url?: string | null;
+  content?: string;
   created_at?: string;
 }
 
@@ -163,6 +165,14 @@ export const api = {
         headers: getHeaders()
       });
       return handleResponse<Service[]>(response);
+    },
+
+    async getById(id: string): Promise<ApiResponse<Service>> {
+      const response = await fetch(`${API_URL}/api/services/${id}`, {
+        method: 'GET',
+        headers: getHeaders()
+      });
+      return handleResponse<Service>(response);
     },
 
     async create(service: Partial<Service>): Promise<ApiResponse<Service>> {

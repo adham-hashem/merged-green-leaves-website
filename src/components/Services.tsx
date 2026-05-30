@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { api } from '../lib/api';
 import * as LucideIcons from 'lucide-react';
 
@@ -35,6 +36,7 @@ const IMAGE_MAPPING: Record<string, string> = {
 };
 
 export default function Services() {
+  const navigate = useNavigate();
   const [services, setServices] = useState<ServiceItem[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -63,6 +65,14 @@ export default function Services() {
     const element = document.getElementById('booking');
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
+  const handleServiceClick = (id: string | undefined, title: string) => {
+    if (id) {
+      navigate(`/services/${id}`);
+    } else {
+      scrollToBooking();
     }
   };
 
@@ -95,7 +105,7 @@ export default function Services() {
                 <div
                   key={service.title}
                   className="group relative h-48 sm:h-56 rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer"
-                  onClick={scrollToBooking}
+                  onClick={() => handleServiceClick(service.id, service.title)}
                 >
                   <img
                     src={localImage}
@@ -113,7 +123,7 @@ export default function Services() {
                 <div
                   key={service.title}
                   className="group relative h-48 sm:h-56 rounded-2xl overflow-hidden shadow-md hover:shadow-xl bg-gradient-to-br from-green-700 via-emerald-800 to-teal-900 transition-all duration-300 cursor-pointer flex flex-col justify-between p-6"
-                  onClick={scrollToBooking}
+                  onClick={() => handleServiceClick(service.id, service.title)}
                 >
                   <div className="flex justify-between items-start">
                     <div className="bg-white/10 p-3 rounded-xl text-yellow-300 group-hover:scale-110 transition-transform duration-300">

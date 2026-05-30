@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { api } from '../../lib/api';
-import { Plus, Trash2, CreditCard as Edit2, Save, X, Leaf } from 'lucide-react';
+import { api, getMediaUrl } from '../../lib/api';
+import { Plus, Trash2, CreditCard as Edit2, Save, X, Leaf, Upload } from 'lucide-react';
 
 interface Service {
   id: string;
@@ -9,7 +9,9 @@ interface Service {
   icon_name: string;
   display_order: number;
   is_active: boolean;
-  created_at: string;
+  image_url?: string | null;
+  content?: string;
+  created_at?: string;
 }
 
 const iconOptions = ['Leaf', 'PenTool', 'Mountain', 'HeartHandshake', 'Layer', 'Flower2', 'TreeDeciduous', 'Shovel', 'Scissors'];
@@ -19,12 +21,16 @@ export default function AdminServices() {
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState('');
   const [formData, setFormData] = useState({
     title: '',
     description: '',
     icon_name: 'Leaf',
     display_order: 1,
     is_active: true,
+    image_url: null as string | null,
+    content: '',
   });
 
   useEffect(() => {
@@ -59,9 +65,42 @@ export default function AdminServices() {
       icon_name: 'Leaf',
       display_order: services.length + 1,
       is_active: true,
+      image_url: null,
+      content: '',
     });
     setEditingId(null);
     setShowForm(false);
+    setUploadError('');
+  };
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    setUploadError('');
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
+      const filePath = `service-banners/${fileName}`;
+
+      const { data: uploadData, error: uploadError } = await api.storage.upload('service-uploads', file, filePath);
+
+      if (uploadError) throw new Error(uploadError.message);
+
+      if (uploadData) {
+        setFormData((prev) => ({ ...prev, image_url: uploadData.path }));
+      }
+    } catch (err: any) {
+      console.error('Upload error:', err);
+      setUploadError(err.message || 'Failed to upload image. Please try again.');
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const removeImage = () => {
+    setFormData((prev) => ({ ...prev, image_url: null }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -93,9 +132,20 @@ export default function AdminServices() {
       icon_name: service.icon_name,
       display_order: service.display_order,
       is_active: service.is_active,
+      image_url: service.image_url || null,
+      content: service.content || '',
     });
     setEditingId(service.id);
     setShowForm(true);
+    setUploadError('');
+    
+    // Scroll the dashboard's main container to the top
+    const mainContainer = document.querySelector('main');
+    if (mainContainer) {
+      mainContainer.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   };
 
   const handleDelete = async (id: string) => {
@@ -182,15 +232,72 @@ export default function AdminServices() {
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">Description</label>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">Short Description</label>
               <textarea
                 name="description"
                 value={formData.description}
                 onChange={handleInputChange}
-                rows={3}
+                rows={2}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:outline-none"
-                placeholder="Describe the service..."
+                placeholder="A brief card description..."
               />
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">Detailed Content</label>
+              <textarea
+                name="content"
+                value={formData.content}
+                onChange={handleInputChange}
+                rows={5}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:outline-none"
+                placeholder="Write custom, detailed content for this service. Split paragraphs with Enter. Start lines with - to render bulleted list items."
+              />
+            </div>
+
+            <div className="space-y-3">
+              <label className="block text-sm font-semibold text-gray-700">Service Banner Image</label>
+              {formData.image_url ? (
+                <div className="relative rounded-xl overflow-hidden border border-gray-200 shadow-sm max-w-xl">
+                  <img
+                    src={getMediaUrl(formData.image_url)}
+                    alt="Service Banner Preview"
+                    className="w-full h-40 object-cover"
+                  />
+                  <button
+                    type="button"
+                    onClick={removeImage}
+                    className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white rounded-full p-2 transition-colors shadow-md"
+                    title="Remove Banner"
+                  >
+                    <X size={14} />
+                  </button>
+                </div>
+              ) : (
+                <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 max-w-xl text-center hover:border-green-500 transition-colors bg-gray-50/50">
+                  <label className="flex flex-col items-center gap-3 cursor-pointer">
+                    {uploading ? (
+                      <div className="w-8 h-8 border-3 border-gray-300 border-t-green-600 rounded-full animate-spin"></div>
+                    ) : (
+                      <Upload size={24} className="text-gray-400" />
+                    )}
+                    <span className="text-sm font-semibold text-gray-600 font-medium">
+                      {uploading ? 'Uploading banner...' : 'Click to upload banner image'}
+                    </span>
+                    <span className="text-xs text-gray-500">JPG, PNG, WebP (max 10MB)</span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleFileChange}
+                      className="hidden"
+                      disabled={uploading}
+                    />
+                  </label>
+                </div>
+              )}
+              {uploadError && (
+                <p className="text-sm text-red-600 font-medium">{uploadError}</p>
+              )}
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -248,34 +355,46 @@ export default function AdminServices() {
         {services.map((service) => (
           <div
             key={service.id}
-            className={`bg-white rounded-2xl shadow-lg p-6 transition-all ${
+            className={`bg-white rounded-2xl shadow-lg p-6 transition-all flex flex-col justify-between ${
               !service.is_active ? 'opacity-60' : ''
             }`}
           >
-            <div className="flex items-start justify-between mb-4">
-              <div className="bg-gradient-to-br from-green-500 to-green-600 p-3 rounded-xl text-white">
-                <Leaf size={24} />
+            <div>
+              <div className="flex items-start justify-between mb-4">
+                <div className="bg-gradient-to-br from-green-500 to-green-600 p-3 rounded-xl text-white">
+                  <Leaf size={24} />
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => handleEdit(service)}
+                    className="p-2 hover:bg-blue-100 rounded-lg transition-colors text-blue-600"
+                  >
+                    <Edit2 size={16} />
+                  </button>
+                  <button
+                    onClick={() => handleDelete(service.id)}
+                    className="p-2 hover:bg-red-100 rounded-lg transition-colors text-red-600"
+                  >
+                    <Trash2 size={16} />
+                  </button>
+                </div>
               </div>
-              <div className="flex gap-2">
-                <button
-                  onClick={() => handleEdit(service)}
-                  className="p-2 hover:bg-blue-100 rounded-lg transition-colors text-blue-600"
-                >
-                  <Edit2 size={16} />
-                </button>
-                <button
-                  onClick={() => handleDelete(service.id)}
-                  className="p-2 hover:bg-red-100 rounded-lg transition-colors text-red-600"
-                >
-                  <Trash2 size={16} />
-                </button>
-              </div>
+
+              {service.image_url && (
+                <div className="w-full h-32 rounded-xl overflow-hidden mb-4 border border-gray-100 shadow-sm">
+                  <img
+                    src={getMediaUrl(service.image_url)}
+                    alt={service.title}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              )}
+
+              <h3 className="text-xl font-bold text-gray-800 mb-2">{service.title}</h3>
+              {service.description && <p className="text-gray-600 text-sm mb-4 line-clamp-3">{service.description}</p>}
             </div>
 
-            <h3 className="text-xl font-bold text-gray-800 mb-2">{service.title}</h3>
-            {service.description && <p className="text-gray-600 text-sm mb-3">{service.description}</p>}
-
-            <div className="flex items-center justify-between text-xs text-gray-500">
+            <div className="flex items-center justify-between text-xs text-gray-500 pt-4 border-t border-gray-50">
               <span>Order: {service.display_order}</span>
               <span
                 className={`px-2 py-1 rounded-full ${
