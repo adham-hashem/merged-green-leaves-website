@@ -23,8 +23,6 @@ export default function BeforeAfterManagement() {
     description: '',
     before_image_url: '',
     after_image_url: '',
-    before_video_url: '',
-    after_video_url: '',
     media_type: 'image',
   });
   const [uploading, setUploading] = useState(false);
@@ -94,8 +92,6 @@ export default function BeforeAfterManagement() {
       description: '',
       before_image_url: '',
       after_image_url: '',
-      before_video_url: '',
-      after_video_url: '',
       media_type: 'image',
     });
     setEditingId(null);
@@ -109,9 +105,7 @@ export default function BeforeAfterManagement() {
       description: project.description || '',
       before_image_url: project.before_image_url || '',
       after_image_url: project.after_image_url || '',
-      before_video_url: project.before_video_url || '',
-      after_video_url: project.after_video_url || '',
-      media_type: project.media_type,
+      media_type: 'image',
     });
     setEditingId(project.id);
     setShowForm(true);
@@ -129,17 +123,8 @@ export default function BeforeAfterManagement() {
       return;
     }
 
-    const isImageProject = formData.media_type === 'image' || formData.media_type === 'both';
-    const isVideoProject = formData.media_type === 'video' || formData.media_type === 'both';
-
-    if (isImageProject && (!formData.before_image_url || !formData.after_image_url)) {
+    if (!formData.before_image_url || !formData.after_image_url) {
       setError('Please upload both before and after images');
-      setUploading(false);
-      return;
-    }
-
-    if (isVideoProject && (!formData.before_video_url || !formData.after_video_url)) {
-      setError('Please upload both before and after videos');
       setUploading(false);
       return;
     }
@@ -152,9 +137,7 @@ export default function BeforeAfterManagement() {
           description: formData.description,
           before_image_url: formData.before_image_url || undefined,
           after_image_url: formData.after_image_url || undefined,
-          before_video_url: formData.before_video_url || undefined,
-          after_video_url: formData.after_video_url || undefined,
-          media_type: formData.media_type,
+          media_type: 'image',
         });
 
         if (updateError) throw updateError;
@@ -164,9 +147,7 @@ export default function BeforeAfterManagement() {
           description: formData.description,
           before_image_url: formData.before_image_url || undefined,
           after_image_url: formData.after_image_url || undefined,
-          before_video_url: formData.before_video_url || undefined,
-          after_video_url: formData.after_video_url || undefined,
-          media_type: formData.media_type,
+          media_type: 'image',
         });
 
         if (insertError) throw insertError;
@@ -264,95 +245,37 @@ export default function BeforeAfterManagement() {
               />
             </div>
 
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">Media Type</label>
-              <select
-                name="media_type"
-                value={formData.media_type}
-                onChange={handleInputChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:outline-none"
-              >
-                <option value="image">Images Only</option>
-                <option value="video">Videos Only</option>
-                <option value="both">Both Images & Videos</option>
-              </select>
+            <div className="border-t pt-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Before Image</label>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => handleFileChange(e, 'before_image_url')}
+                    disabled={uploading}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:outline-none disabled:bg-gray-100"
+                  />
+                  {formData.before_image_url && (
+                    <img src={getMediaUrl(formData.before_image_url)} alt="Before" className="mt-2 h-32 w-full object-cover rounded-lg" />
+                  )}
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">After Image</label>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => handleFileChange(e, 'after_image_url')}
+                    disabled={uploading}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:outline-none disabled:bg-gray-100"
+                  />
+                  {formData.after_image_url && (
+                    <img src={getMediaUrl(formData.after_image_url)} alt="After" className="mt-2 h-32 w-full object-cover rounded-lg" />
+                  )}
+                </div>
+              </div>
             </div>
-
-            {(formData.media_type === 'image' || formData.media_type === 'both') && (
-              <div className="border-t pt-6">
-                <h3 className="text-lg font-semibold text-gray-700 mb-4 flex items-center gap-2">
-                  <ImageIcon size={20} />
-                  Image Files
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">Before Image</label>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) => handleFileChange(e, 'before_image_url')}
-                      disabled={uploading}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:outline-none disabled:bg-gray-100"
-                    />
-                    {formData.before_image_url && (
-                      <img src={getMediaUrl(formData.before_image_url)} alt="Before" className="mt-2 h-32 w-full object-cover rounded-lg" />
-                    )}
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">After Image</label>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) => handleFileChange(e, 'after_image_url')}
-                      disabled={uploading}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:outline-none disabled:bg-gray-100"
-                    />
-                    {formData.after_image_url && (
-                      <img src={getMediaUrl(formData.after_image_url)} alt="After" className="mt-2 h-32 w-full object-cover rounded-lg" />
-                    )}
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {(formData.media_type === 'video' || formData.media_type === 'both') && (
-              <div className="border-t pt-6">
-                <h3 className="text-lg font-semibold text-gray-700 mb-4 flex items-center gap-2">
-                  <Film size={20} />
-                  Video Files
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">Before Video</label>
-                    <input
-                      type="file"
-                      accept="video/*"
-                      onChange={(e) => handleFileChange(e, 'before_video_url')}
-                      disabled={uploading}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:outline-none disabled:bg-gray-100"
-                    />
-                    {formData.before_video_url && (
-                      <video src={getMediaUrl(formData.before_video_url)} className="mt-2 h-32 w-full object-cover rounded-lg" controls />
-                    )}
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">After Video</label>
-                    <input
-                      type="file"
-                      accept="video/*"
-                      onChange={(e) => handleFileChange(e, 'after_video_url')}
-                      disabled={uploading}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:outline-none disabled:bg-gray-100"
-                    />
-                    {formData.after_video_url && (
-                      <video src={getMediaUrl(formData.after_video_url)} className="mt-2 h-32 w-full object-cover rounded-lg" controls />
-                    )}
-                  </div>
-                </div>
-              </div>
-            )}
 
             <div className="flex gap-4 pt-4 border-t border-gray-200">
               <button
@@ -382,61 +305,40 @@ export default function BeforeAfterManagement() {
           </div>
         ) : (
           projects.map((project) => {
-            const isVideo = project.media_type === 'video' || project.media_type === 'both';
-
             return (
               <div key={project.id} className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all">
                 <div className="aspect-square bg-black relative overflow-hidden group">
-                  {isVideo ? (
-                    <>
-                      <video
-                        src={getMediaUrl(project.before_video_url)}
-                        className="w-full h-full object-contain transition-opacity group-hover:opacity-50"
+                  <>
+                    {/* Before Image with Blur Background */}
+                    <div className="w-full h-full transition-opacity group-hover:opacity-0 duration-300">
+                      <img
+                        src={getMediaUrl(project.before_image_url)}
+                        alt=""
+                        className="absolute inset-0 w-full h-full object-cover blur-md opacity-35 scale-105"
                       />
-                      <video
-                        src={getMediaUrl(project.after_video_url)}
-                        className="absolute inset-0 w-full h-full object-contain opacity-0 group-hover:opacity-100 transition-opacity"
+                      <img
+                        src={getMediaUrl(project.before_image_url)}
+                        alt="Before"
+                        className="absolute inset-0 w-full h-full object-contain z-10"
                       />
-                    </>
-                  ) : (
-                    <>
-                      {/* Before Image with Blur Background */}
-                      <div className="w-full h-full transition-opacity group-hover:opacity-0 duration-300">
-                        <img
-                          src={getMediaUrl(project.before_image_url)}
-                          alt=""
-                          className="absolute inset-0 w-full h-full object-cover blur-md opacity-35 scale-105"
-                        />
-                        <img
-                          src={getMediaUrl(project.before_image_url)}
-                          alt="Before"
-                          className="absolute inset-0 w-full h-full object-contain z-10"
-                        />
-                      </div>
-                      {/* After Image with Blur Background */}
-                      <div className="absolute inset-0 w-full h-full opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                        <img
-                          src={getMediaUrl(project.after_image_url)}
-                          alt=""
-                          className="absolute inset-0 w-full h-full object-cover blur-md opacity-35 scale-105"
-                        />
-                        <img
-                          src={getMediaUrl(project.after_image_url)}
-                          alt="After"
-                          className="absolute inset-0 w-full h-full object-contain z-10"
-                        />
-                      </div>
-                    </>
-                  )}
+                    </div>
+                    {/* After Image with Blur Background */}
+                    <div className="absolute inset-0 w-full h-full opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                      <img
+                        src={getMediaUrl(project.after_image_url)}
+                        alt=""
+                        className="absolute inset-0 w-full h-full object-cover blur-md opacity-35 scale-105"
+                      />
+                      <img
+                        src={getMediaUrl(project.after_image_url)}
+                        alt="After"
+                        className="absolute inset-0 w-full h-full object-contain z-10"
+                      />
+                    </div>
+                  </>
                   <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                     <p className="text-white text-sm font-semibold">Hover to see after</p>
                   </div>
-                  {isVideo && (
-                    <div className="absolute top-2 right-2 bg-blue-600 text-white px-2 py-1 rounded text-xs font-semibold flex items-center gap-1 z-20">
-                      <Film size={12} />
-                      Video
-                    </div>
-                  )}
                 </div>
 
                 <div className="p-4">

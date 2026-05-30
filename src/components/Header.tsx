@@ -9,10 +9,10 @@ interface HeaderProps {
 export default function Header({ activeSection = '' }: HeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
-  const isGalleryPage = location.pathname === '/before-after';
+  const isHomePage = location.pathname === '/';
 
   const scrollToSection = (id: string) => {
-    if (isGalleryPage) {
+    if (!isHomePage) {
       window.location.href = `/#${id}`;
       return;
     }
@@ -32,7 +32,7 @@ export default function Header({ activeSection = '' }: HeaderProps) {
   ];
 
   const isActive = (item: typeof navItems[0]) => {
-    if (item.type === 'link' && isGalleryPage) return true;
+    if (item.type === 'link' && location.pathname === '/before-after') return true;
     if (item.type === 'scroll' && activeSection === item.id) return true;
     return false;
   };
@@ -65,7 +65,7 @@ export default function Header({ activeSection = '' }: HeaderProps) {
                   key={item.id}
                   to={`/#${item.id}`}
                   onClick={(e) => {
-                    if (!isGalleryPage) {
+                    if (isHomePage) {
                       e.preventDefault();
                       scrollToSection(item.id!);
                     }
@@ -118,7 +118,7 @@ export default function Header({ activeSection = '' }: HeaderProps) {
                   key={item.id}
                   to={`/#${item.id}`}
                   onClick={(e) => {
-                    if (!isGalleryPage) {
+                    if (isHomePage) {
                       e.preventDefault();
                       scrollToSection(item.id!);
                     } else {

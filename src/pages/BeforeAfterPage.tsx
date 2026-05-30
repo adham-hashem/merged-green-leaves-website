@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { api, API_URL, getMediaUrl } from '../lib/api';
-import { Play, Pause, ArrowLeft, Image, Film, Grid3x3, LayoutGrid, Leaf, X, ArrowRight, Maximize2 } from 'lucide-react';
+import { Play, Pause, ArrowLeft, Image, Film, Grid3x3, LayoutGrid, Leaf, X, ArrowRight, Maximize2, ArrowDown } from 'lucide-react';
 
 import { Link } from 'react-router-dom';
 import Header from '../components/Header';
@@ -150,33 +150,32 @@ export default function BeforeAfterPage() {
                 <h1 className="text-5xl lg:text-7xl font-bold">Our Projects</h1>
               </div>
 
-              <p className="text-xl lg:text-2xl text-green-100 max-w-3xl mx-auto mb-10 leading-relaxed">
+              <p className="text-xl lg:text-2xl text-green-100 max-w-3xl mx-auto mb-6 leading-relaxed">
                 Discover the stunning transformations we've created for our clients.
                 From complete garden renovations to subtle improvements, see the difference
                 professional landscaping makes.
               </p>
 
-              {/* Stats Cards */}
-              <div className="flex flex-wrap justify-center gap-4 lg:gap-8">
-                <div className="bg-white/10 backdrop-blur-sm rounded-2xl px-6 py-4 border border-white/20">
-                  <p className="text-3xl lg:text-4xl font-bold text-yellow-400">{stats.total}</p>
-                  <p className="text-green-100 text-sm lg:text-base">Total Projects</p>
-                </div>
-                <div className="bg-white/10 backdrop-blur-sm rounded-2xl px-6 py-4 border border-white/20">
-                  <p className="text-3xl lg:text-4xl font-bold text-yellow-400">{stats.images}</p>
-                  <p className="text-green-100 text-sm lg:text-base">Photo Galleries</p>
-                </div>
-                <div className="bg-white/10 backdrop-blur-sm rounded-2xl px-6 py-4 border border-white/20">
-                  <p className="text-3xl lg:text-4xl font-bold text-yellow-400">{stats.videos}</p>
-                  <p className="text-green-100 text-sm lg:text-base">Video Tours</p>
-                </div>
+              {/* Bouncing Down Arrow Indicator */}
+              <div className="mt-8 flex flex-col items-center justify-center gap-2">
+                <span className="text-xs font-semibold text-green-200 tracking-wider uppercase animate-pulse">View Transformations</span>
+                <button
+                  onClick={() => {
+                    const el = document.getElementById('projects-grid');
+                    if (el) el.scrollIntoView({ behavior: 'smooth' });
+                  }}
+                  className="bg-white/10 hover:bg-white/20 hover:scale-110 active:scale-95 transition-all text-white p-3 rounded-full border border-white/20 shadow-lg flex items-center justify-center cursor-pointer animate-bounce mt-1"
+                  title="View Projects"
+                >
+                  <ArrowDown className="w-6 h-6 text-yellow-400" />
+                </button>
               </div>
             </div>
           </div>
         </div>
 
         {/* Gallery Section */}
-        <div className="bg-gradient-to-b from-gray-50 to-white py-16">
+        <div id="projects-grid" className="bg-gradient-to-b from-gray-50 to-white py-16">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             {/* Filter and Controls */}
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 mb-12">
@@ -203,17 +202,7 @@ export default function BeforeAfterPage() {
                   <Image size={18} />
                   Images
                 </button>
-                <button
-                  onClick={() => handleFilterTypeChange('videos')}
-                  className={`px-6 py-3 rounded-xl font-semibold transition-all flex items-center gap-2 ${
-                    filterType === 'videos'
-                      ? 'bg-green-600 text-white shadow-lg shadow-green-600/30'
-                      : 'bg-white text-gray-700 hover:bg-gray-100 shadow'
-                  }`}
-                >
-                  <Film size={18} />
-                  Videos
-                </button>
+
               </div>
 
               <div className="flex items-center gap-2 bg-white rounded-xl p-1 shadow">
@@ -244,7 +233,7 @@ export default function BeforeAfterPage() {
                 <Leaf className="text-green-600" size={20} />
                 How to Use the Comparison Slider
               </h3>
-              <div className="grid md:grid-cols-3 gap-4 text-sm text-gray-600">
+              <div className="grid md:grid-cols-2 gap-4 text-sm text-gray-600">
                 <div className="flex items-start gap-2">
                   <div className="bg-green-100 text-green-700 rounded-full w-6 h-6 flex items-center justify-center flex-shrink-0 font-bold">1</div>
                   <p><strong>Desktop:</strong> Click and drag the slider left or right to compare images</p>
@@ -252,10 +241,6 @@ export default function BeforeAfterPage() {
                 <div className="flex items-start gap-2">
                   <div className="bg-green-100 text-green-700 rounded-full w-6 h-6 flex items-center justify-center flex-shrink-0 font-bold">2</div>
                   <p><strong>Mobile:</strong> Touch and slide your finger to adjust the comparison</p>
-                </div>
-                <div className="flex items-start gap-2">
-                  <div className="bg-green-100 text-green-700 rounded-full w-6 h-6 flex items-center justify-center flex-shrink-0 font-bold">3</div>
-                  <p><strong>Videos:</strong> Click play button to watch side-by-side comparisons</p>
                 </div>
               </div>
             </div>
@@ -288,14 +273,10 @@ export default function BeforeAfterPage() {
                       </p>
 
                       {/* Features Preview */}
-                      <div className="grid grid-cols-3 gap-4 mb-8">
+                      <div className="grid grid-cols-2 gap-4 mb-8">
                         <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
                           <Image className="w-8 h-8 text-green-600 mx-auto mb-2" />
                           <p className="text-xs text-gray-600 font-medium">Photo Comparisons</p>
-                        </div>
-                        <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
-                          <Film className="w-8 h-8 text-green-600 mx-auto mb-2" />
-                          <p className="text-xs text-gray-600 font-medium">Video Tours</p>
                         </div>
                         <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
                           <Leaf className="w-8 h-8 text-green-600 mx-auto mb-2" />
@@ -348,9 +329,6 @@ export default function BeforeAfterPage() {
                 {currentProjects.map((project, index) => {
                   const comparison = comparisons.get(project.id);
                   const sliderPos = comparison?.sliderPosition || 50;
-                  const isVideoProject = project.media_type === 'video' || project.media_type === 'both';
-                  const isImageProject = project.media_type === 'image' || project.media_type === 'both';
-                  const isPlaying = playingVideos.has(project.id);
 
                   return (
                     <div
@@ -359,198 +337,110 @@ export default function BeforeAfterPage() {
                     >
                       {/* Media Container */}
                       <div className="relative overflow-hidden bg-black">
-                        {isImageProject && (
-                          <div className="relative w-full aspect-[4/3] overflow-hidden">
-                            {/* After Image (Bottom Layer) */}
-                            <div className="absolute inset-0 w-full h-full">
+                        <div className="relative w-full aspect-[4/3] overflow-hidden">
+                          {/* After Image (Bottom Layer) */}
+                          <div className="absolute inset-0 w-full h-full">
+                            <img
+                              src={getMediaUrl(project.after_image_url)}
+                              alt=""
+                              className="absolute inset-0 w-full h-full object-cover blur-md opacity-35 scale-105"
+                            />
+                            <img
+                              src={getMediaUrl(project.after_image_url)}
+                              alt={`${project.title} - After Gardening/Landscaping transformation in Cambridge`}
+                              className="absolute inset-0 w-full h-full object-contain z-10"
+                            />
+                          </div>
+
+                          {/* Before Image with clipPath (Top Layer) */}
+                          <div
+                            className="absolute inset-0 overflow-hidden z-20"
+                            style={{ clipPath: `polygon(0 0, ${sliderPos}% 0, ${sliderPos}% 100%, 0 100%)` }}
+                          >
+                            <div className="absolute inset-0 w-full h-full bg-black">
                               <img
-                                src={getMediaUrl(project.after_image_url)}
+                                src={getMediaUrl(project.before_image_url)}
                                 alt=""
                                 className="absolute inset-0 w-full h-full object-cover blur-md opacity-35 scale-105"
                               />
                               <img
-                                src={getMediaUrl(project.after_image_url)}
-                                alt={`${project.title} - After Gardening/Landscaping transformation in Cambridge`}
+                                src={getMediaUrl(project.before_image_url)}
+                                alt={`${project.title} - Before Gardening/Landscaping transformation in Cambridge`}
                                 className="absolute inset-0 w-full h-full object-contain z-10"
                               />
                             </div>
+                          </div>
 
-                            {/* Before Image with clipPath (Top Layer) */}
-                            <div
-                              className="absolute inset-0 overflow-hidden z-20"
-                              style={{ clipPath: `polygon(0 0, ${sliderPos}% 0, ${sliderPos}% 100%, 0 100%)` }}
-                            >
-                              <div className="absolute inset-0 w-full h-full bg-black">
-                                <img
-                                  src={getMediaUrl(project.before_image_url)}
-                                  alt=""
-                                  className="absolute inset-0 w-full h-full object-cover blur-md opacity-35 scale-105"
-                                />
-                                <img
-                                  src={getMediaUrl(project.before_image_url)}
-                                  alt={`${project.title} - Before Gardening/Landscaping transformation in Cambridge`}
-                                  className="absolute inset-0 w-full h-full object-contain z-10"
-                                />
+                          {/* Slider Bar */}
+                          <div
+                            className="absolute top-0 bottom-0 w-1 bg-white shadow-2xl cursor-col-resize z-30"
+                            style={{ left: `${sliderPos}%` }}
+                            onMouseDown={(e) => {
+                              e.preventDefault();
+                              const container = e.currentTarget.parentElement;
+                              if (!container) return;
+
+                              const handleMouseMove = (moveEvent: MouseEvent) => {
+                                const rect = container.getBoundingClientRect();
+                                const newPos = Math.max(0, Math.min(100, ((moveEvent.clientX - rect.left) / rect.width) * 100));
+                                handleSliderChange(project.id, newPos);
+                              };
+
+                              const handleMouseUp = () => {
+                                document.removeEventListener('mousemove', handleMouseMove);
+                                document.removeEventListener('mouseup', handleMouseUp);
+                              };
+
+                              document.addEventListener('mousemove', handleMouseMove);
+                              document.addEventListener('mouseup', handleMouseUp);
+                            }}
+                            onTouchStart={(e) => {
+                              const container = e.currentTarget.parentElement;
+                              if (!container) return;
+
+                              const handleTouchMove = (moveEvent: TouchEvent) => {
+                                const rect = container.getBoundingClientRect();
+                                const newPos = Math.max(0, Math.min(100, ((moveEvent.touches[0].clientX - rect.left) / rect.width) * 100));
+                                handleSliderChange(project.id, newPos);
+                              };
+
+                              const handleTouchEnd = () => {
+                                document.removeEventListener('touchmove', handleTouchMove);
+                                document.removeEventListener('touchend', handleTouchEnd);
+                              };
+
+                              document.addEventListener('touchmove', handleTouchMove);
+                              document.addEventListener('touchend', handleTouchEnd);
+                            }}
+                          >
+                            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-full p-4 shadow-xl">
+                              <div className="flex gap-1.5">
+                                <div className="w-1 h-8 bg-green-600 rounded-full"></div>
+                                <div className="w-1 h-8 bg-green-600 rounded-full"></div>
                               </div>
                             </div>
-
-                            {/* Slider Bar */}
-                            <div
-                              className="absolute top-0 bottom-0 w-1 bg-white shadow-2xl cursor-col-resize z-30"
-                              style={{ left: `${sliderPos}%` }}
-                              onMouseDown={(e) => {
-                                e.preventDefault();
-                                const container = e.currentTarget.parentElement;
-                                if (!container) return;
-
-                                const handleMouseMove = (moveEvent: MouseEvent) => {
-                                  const rect = container.getBoundingClientRect();
-                                  const newPos = Math.max(0, Math.min(100, ((moveEvent.clientX - rect.left) / rect.width) * 100));
-                                  handleSliderChange(project.id, newPos);
-                                };
-
-                                const handleMouseUp = () => {
-                                  document.removeEventListener('mousemove', handleMouseMove);
-                                  document.removeEventListener('mouseup', handleMouseUp);
-                                };
-
-                                document.addEventListener('mousemove', handleMouseMove);
-                                document.addEventListener('mouseup', handleMouseUp);
-                              }}
-                              onTouchStart={(e) => {
-                                const container = e.currentTarget.parentElement;
-                                if (!container) return;
-
-                                const handleTouchMove = (moveEvent: TouchEvent) => {
-                                  const rect = container.getBoundingClientRect();
-                                  const newPos = Math.max(0, Math.min(100, ((moveEvent.touches[0].clientX - rect.left) / rect.width) * 100));
-                                  handleSliderChange(project.id, newPos);
-                                };
-
-                                const handleTouchEnd = () => {
-                                  document.removeEventListener('touchmove', handleTouchMove);
-                                  document.removeEventListener('touchend', handleTouchEnd);
-                                };
-
-                                document.addEventListener('touchmove', handleTouchMove);
-                                document.addEventListener('touchend', handleTouchEnd);
-                              }}
-                            >
-                              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-full p-4 shadow-xl">
-                                <div className="flex gap-1.5">
-                                  <div className="w-1 h-8 bg-green-600 rounded-full"></div>
-                                  <div className="w-1 h-8 bg-green-600 rounded-full"></div>
-                                </div>
-                              </div>
-                            </div>
-
-                            {/* Labels */}
-                            <div className="absolute top-4 left-4 bg-black/70 backdrop-blur-sm text-white px-4 py-2 rounded-full text-xs md:text-sm font-bold shadow-lg z-30">
-                              Before
-                            </div>
-                            <div className="absolute top-4 right-4 bg-black/70 backdrop-blur-sm text-white px-4 py-2 rounded-full text-xs md:text-sm font-bold shadow-lg z-30">
-                              After
-                            </div>
-
-                            {/* Maximize Button */}
-                            <button
-                              onClick={() => {
-                                setActiveLightboxProject(project);
-                                setLightboxTab('after');
-                              }}
-                              className="absolute bottom-4 left-4 z-30 bg-black/75 hover:bg-green-600 text-white hover:scale-110 p-2.5 rounded-full backdrop-blur-sm transition-all shadow-lg"
-                              title="View Full Size"
-                            >
-                              <Maximize2 className="w-5 h-5" />
-                            </button>
                           </div>
-                        )}
 
-                        {/* Video Comparison */}
-                        {isVideoProject && (
-                          <div className="relative w-full aspect-[4/3] bg-black overflow-hidden">
-                            {!isPlaying ? (
-                              <div className="relative w-full h-full">
-                                <video
-                                  src={getMediaUrl(project.before_video_url)}
-                                  className="w-full h-full object-contain"
-                                  poster={getMediaUrl(project.before_image_url)}
-                                />
-                                <button
-                                  onClick={() => toggleVideoPlayback(project.id)}
-                                  className="absolute inset-0 flex items-center justify-center bg-black/50 hover:bg-black/60 transition-all"
-                                >
-                                  <div className="bg-green-600 hover:bg-green-700 text-white rounded-full p-6 shadow-2xl transform hover:scale-110 transition-all">
-                                    <Play size={40} fill="currentColor" />
-                                  </div>
-                                </button>
-                              </div>
-                            ) : (
-                              <div className="relative w-full h-full flex">
-                                <div className="w-1/2 h-full relative">
-                                  <video
-                                    src={getMediaUrl(project.before_video_url)}
-                                    autoPlay
-                                    controls
-                                    className="w-full h-full object-contain"
-                                  />
-                                  <div className="absolute top-4 left-4 bg-black/70 backdrop-blur-sm text-white px-4 py-2 rounded-full text-xs md:text-sm font-bold shadow-lg z-10">
-                                    Before
-                                  </div>
-                                </div>
-                                <div className="w-1/2 h-full relative border-l-4 border-white">
-                                  <video
-                                    src={getMediaUrl(project.after_video_url)}
-                                    autoPlay
-                                    controls
-                                    className="w-full h-full object-contain"
-                                  />
-                                  <div className="absolute top-4 right-4 bg-black/70 backdrop-blur-sm text-white px-4 py-2 rounded-full text-xs md:text-sm font-bold shadow-lg z-10">
-                                    After
-                                  </div>
-                                </div>
-                                <button
-                                  onClick={() => toggleVideoPlayback(project.id)}
-                                  className="absolute bottom-4 right-4 bg-red-600 hover:bg-red-700 text-white rounded-full p-3 shadow-xl transition-all z-20"
-                                >
-                                  <Pause size={24} fill="currentColor" />
-                                </button>
-                              </div>
-                            )}
+                          {/* Labels */}
+                          <div className="absolute top-4 left-4 bg-black/70 backdrop-blur-sm text-white px-4 py-2 rounded-full text-xs md:text-sm font-bold shadow-lg z-30">
+                            Before
+                          </div>
+                          <div className="absolute top-4 right-4 bg-black/70 backdrop-blur-sm text-white px-4 py-2 rounded-full text-xs md:text-sm font-bold shadow-lg z-30">
+                            After
+                          </div>
 
-                            {/* Maximize Button for Video */}
-                            <button
-                              onClick={() => {
-                                setActiveLightboxProject(project);
-                                setLightboxTab('after');
-                              }}
-                              className="absolute bottom-4 left-4 z-30 bg-black/75 hover:bg-green-600 text-white hover:scale-110 p-2.5 rounded-full backdrop-blur-sm transition-all shadow-lg"
-                              title="View Full Size"
-                            >
-                              <Maximize2 className="w-5 h-5" />
-                            </button>
-                          </div>
-                        )}
-
-                        {/* Project Type Badge */}
-                        {isVideoProject && !isImageProject && (
-                          <div className="absolute top-4 right-20 bg-blue-600 text-white px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1 shadow-lg">
-                            <Film size={12} />
-                            VIDEO
-                          </div>
-                        )}
-                        {isImageProject && !isVideoProject && (
-                          <div className="absolute top-4 right-20 bg-purple-600 text-white px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity">
-                            <Image size={12} />
-                            PHOTOS
-                          </div>
-                        )}
-                        {isImageProject && isVideoProject && (
-                          <div className="absolute top-4 right-20 bg-gradient-to-r from-purple-600 to-blue-600 text-white px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1 shadow-lg">
-                            <Image size={12} />
-                            <Film size={12} />
-                          </div>
-                        )}
+                          {/* Maximize Button */}
+                          <button
+                            onClick={() => {
+                              setActiveLightboxProject(project);
+                              setLightboxTab('after');
+                            }}
+                            className="absolute bottom-4 left-4 z-30 bg-black/75 hover:bg-green-600 text-white hover:scale-110 p-2.5 rounded-full backdrop-blur-sm transition-all shadow-lg"
+                            title="View Full Size"
+                          >
+                            <Maximize2 className="w-5 h-5" />
+                          </button>
+                        </div>
                       </div>
 
                       {/* Project Info */}
@@ -657,30 +547,12 @@ export default function BeforeAfterPage() {
 
             {/* Dynamic Media View */}
             <div className="flex-1 h-full max-h-[70vh] md:max-h-[75vh] w-full flex items-center justify-center overflow-hidden rounded-2xl relative select-none">
-              {(activeLightboxProject.media_type === 'video' || activeLightboxProject.media_type === 'both') && lightboxTab === 'before' && activeLightboxProject.before_video_url ? (
-                <video
-                  key={`before-vid-${activeLightboxProject.id}`}
-                  src={getMediaUrl(activeLightboxProject.before_video_url)}
-                  controls
-                  autoPlay
-                  className="max-w-full max-h-full object-contain rounded-lg shadow-2xl"
-                />
-              ) : (activeLightboxProject.media_type === 'video' || activeLightboxProject.media_type === 'both') && lightboxTab === 'after' && activeLightboxProject.after_video_url ? (
-                <video
-                  key={`after-vid-${activeLightboxProject.id}`}
-                  src={getMediaUrl(activeLightboxProject.after_video_url)}
-                  controls
-                  autoPlay
-                  className="max-w-full max-h-full object-contain rounded-lg shadow-2xl"
-                />
-              ) : (
-                <img
-                  key={`${lightboxTab}-${activeLightboxProject.id}`}
-                  src={getMediaUrl(lightboxTab === 'before' ? activeLightboxProject.before_image_url : activeLightboxProject.after_image_url)}
-                  alt={lightboxTab === 'before' ? `${activeLightboxProject.title} - Before Gardening/Landscaping transformation in Cambridge` : `${activeLightboxProject.title} - After Gardening/Landscaping transformation in Cambridge`}
-                  className="max-w-full max-h-full object-contain rounded-lg shadow-2xl animate-in zoom-in-95 duration-300"
-                />
-              )}
+              <img
+                key={`${lightboxTab}-${activeLightboxProject.id}`}
+                src={getMediaUrl(lightboxTab === 'before' ? activeLightboxProject.before_image_url : activeLightboxProject.after_image_url)}
+                alt={lightboxTab === 'before' ? `${activeLightboxProject.title} - Before Gardening/Landscaping transformation in Cambridge` : `${activeLightboxProject.title} - After Gardening/Landscaping transformation in Cambridge`}
+                className="max-w-full max-h-full object-contain rounded-lg shadow-2xl animate-in zoom-in-95 duration-300"
+              />
             </div>
 
             {/* Navigation - Right */}

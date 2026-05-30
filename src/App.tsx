@@ -1,5 +1,5 @@
 import { useState, useEffect, lazy, Suspense } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AdminAuthProvider } from './context/AdminAuthContext';
 import Header from './components/Header';
 import AnnouncementBar from './components/AnnouncementBar';
@@ -27,6 +27,7 @@ const PageLoader = () => (
 
 function PublicSite() {
   const [activeSection, setActiveSection] = useState('home');
+  const location = useLocation();
 
   useEffect(() => {
     // Dynamic SEO Optimization for Home Page
@@ -36,6 +37,18 @@ function PublicSite() {
       metaDesc.setAttribute('content', 'Professional gardening, landscaping, fencing, turfing, tree surgery, hedge trimming, and garden clearance in Cambridge. Transforming gardens and creating beautiful outdoor spaces. Get a free quote today!');
     }
   }, []);
+
+  useEffect(() => {
+    if (location.hash) {
+      const id = location.hash.replace('#', '');
+      setTimeout(() => {
+        const element = document.getElementById(id);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 300);
+    }
+  }, [location.hash]);
 
   useEffect(() => {
     const handleScroll = () => {
