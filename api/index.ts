@@ -419,6 +419,15 @@ app.get('/api/bookings/:id', authenticateToken, async (req, res) => {
   }
 });
 
+// Helper to escape HTML tags for Telegram parse_mode: 'HTML'
+function escapeHtml(text: string | null | undefined): string {
+  if (!text) return '';
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
+
 // Helper to send message to Telegram admin chat with automatic retries
 async function sendTelegramNotification(booking: any, attempt = 1, maxAttempts = 3) {
   const token = process.env.TELEGRAM_BOT_TOKEN;
@@ -429,16 +438,22 @@ async function sendTelegramNotification(booking: any, attempt = 1, maxAttempts =
     return;
   }
 
-  const notesText = booking.notes ? booking.notes.trim() : 'None';
+  const clientName = escapeHtml(booking.full_name);
+  const clientPhone = escapeHtml(booking.phone_number);
+  const clientEmail = escapeHtml(booking.email);
+  const clientAddress = escapeHtml(booking.address);
+  const clientService = escapeHtml(booking.service);
+  const clientBudget = escapeHtml(booking.budget);
+  const notesText = booking.notes ? escapeHtml(booking.notes.trim()) : 'None';
   const imageUrlText = booking.image_url ? `📎 <a href="${booking.image_url}">View Attachment</a>` : 'None';
 
   const message = `🌳 <b>New Booking Received!</b> 🌳\n\n` +
-                  `👤 <b>Client:</b> ${booking.full_name}\n` +
-                  `📞 <b>Phone:</b> ${booking.phone_number}\n` +
-                  `✉️ <b>Email:</b> ${booking.email}\n` +
-                  `📍 <b>Address:</b> ${booking.address}\n` +
-                  `🛠 <b>Service:</b> ${booking.service}\n` +
-                  `💰 <b>Budget:</b> ${booking.budget}\n` +
+                  `👤 <b>Client:</b> ${clientName}\n` +
+                  `📞 <b>Phone:</b> ${clientPhone}\n` +
+                  `✉️ <b>Email:</b> ${clientEmail}\n` +
+                  `📍 <b>Address:</b> ${clientAddress}\n` +
+                  `🛠 <b>Service:</b> ${clientService}\n` +
+                  `💰 <b>Budget:</b> ${clientBudget}\n` +
                   `📝 <b>Notes:</b> ${notesText}\n` +
                   `🖼️ <b>Image:</b> ${imageUrlText}\n\n` +
                   `📅 <i>Submitted at: ${new Date(booking.created_at).toLocaleString('en-GB')}</i>`;
@@ -508,11 +523,13 @@ app.post('/api/bookings', async (req, res) => {
 
     await client.query('COMMIT');
 
-    // Trigger Telegram notification in the background (does not block client response)
+    // Trigger Telegram notification and wait to ensure the serverless function environment doesn't terminate before it's sent
     const newBooking = bookingRes.rows[0];
-    sendTelegramNotification(newBooking).catch(err => {
-      console.error('[Telegram Notifier] Background exception in notification queue:', err);
-    });
+    try {
+      await sendTelegramNotification(newBooking);
+    } catch (err) {
+      console.error('[Telegram Notifier] Exception in notification queue:', err);
+    }
 
     return res.status(201).json(newBooking);
   } catch (error: any) {
