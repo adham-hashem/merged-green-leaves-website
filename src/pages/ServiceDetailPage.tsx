@@ -70,12 +70,54 @@ export default function ServiceDetailPage() {
     return (
       <div className="min-h-screen flex flex-col bg-white">
         <Header activeSection="services" />
-        <div className="flex-1 flex items-center justify-center py-24">
-          <div className="text-center">
-            <div className="w-12 h-12 border-4 border-green-200 border-t-green-600 rounded-full animate-spin mx-auto mb-4"></div>
-            <p className="text-gray-600">Loading service details...</p>
+        <main className="flex-1">
+          {/* Skeleton Hero Banner */}
+          <div className="relative h-64 sm:h-96 w-full bg-gradient-to-br from-gray-100 to-gray-200/50 animate-pulse overflow-hidden">
+            <div className="absolute inset-0 flex items-end">
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full pb-8 sm:pb-12 flex gap-4">
+                <div className="w-16 h-16 bg-gray-200/60 rounded-2xl flex-shrink-0 animate-pulse"></div>
+                <div className="space-y-3 flex-1">
+                  <div className="h-10 w-64 bg-gray-200/60 rounded-xl animate-pulse"></div>
+                  <div className="h-5 w-96 bg-gray-200/60 rounded-lg animate-pulse"></div>
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
+
+          {/* Skeleton Content */}
+          <div className="bg-gradient-to-b from-white to-green-50 py-16 sm:py-24">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+                {/* Detailed Content Left Column */}
+                <div className="lg:col-span-2 space-y-8 bg-white rounded-3xl p-8 sm:p-12 shadow-sm border border-gray-100">
+                  <div className="flex items-center gap-3 border-b pb-6">
+                    <div className="w-6 h-6 bg-gray-200 rounded-full animate-pulse"></div>
+                    <div className="h-6 w-48 bg-gray-200 rounded-md animate-pulse"></div>
+                  </div>
+                  <div className="space-y-4">
+                    <div className="h-4 w-full bg-gray-100 rounded-md animate-pulse"></div>
+                    <div className="h-4 w-11/12 bg-gray-100 rounded-md animate-pulse"></div>
+                    <div className="h-4 w-10/12 bg-gray-100 rounded-md animate-pulse"></div>
+                    <div className="h-4 w-full bg-gray-100 rounded-md animate-pulse"></div>
+                    <div className="h-4 w-4/5 bg-gray-100 rounded-md animate-pulse"></div>
+                  </div>
+                </div>
+
+                {/* Call To Action Sidebar */}
+                <div className="space-y-6">
+                  <div className="bg-gray-900 rounded-3xl p-8 h-96 animate-pulse relative overflow-hidden">
+                    <div className="h-6 w-32 bg-gray-800 rounded-md mb-6"></div>
+                    <div className="h-4 w-full bg-gray-800 rounded-md mb-8"></div>
+                    <div className="space-y-4">
+                      <div className="h-10 w-full bg-gray-800 rounded-xl"></div>
+                      <div className="h-10 w-full bg-gray-800 rounded-xl"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </main>
         <Footer />
       </div>
     );
