@@ -9,7 +9,7 @@ export default function Hero() {
   };
 
   return (
-    <div className="relative w-full min-h-[calc(100vh-72px)] flex flex-col justify-center md:block overflow-hidden bg-gradient-to-b from-[#04200e] via-[#0b3d1c] to-[#04200e] py-6 md:py-0">
+    <div className="relative w-full min-h-[calc(100vh-72px)] flex flex-col justify-center md:block overflow-hidden bg-gradient-to-b from-[#04200e] via-[#0b3d1c] to-[#04200e] pt-4 pb-20 md:py-0">
       {/* Desktop Background Image Layer */}
       <div
         className="absolute inset-0 hidden md:block bg-no-repeat bg-center bg-cover md:bg-[position:85%_center]"
