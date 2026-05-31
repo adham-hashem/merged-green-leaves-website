@@ -54,21 +54,85 @@ export default function BeforeAfterPage() {
   };
 
   useEffect(() => {
-    // Dynamic SEO Optimization
+    // 1. Dynamic SEO Optimization
     document.title = "Our Projects Gallery | Gardening & Landscaping in Cambridge - Cambridge Green Leaves";
-    const metaDesc = document.querySelector('meta[name="description"]');
-    if (metaDesc) {
-      metaDesc.setAttribute('content', 'Explore the stunning before and after transformations of our gardening, landscaping, turfing, and tree surgery projects in Cambridge. Contact us to transform your garden today!');
-    }
     
-    // Dynamic Canonical Link Update
+    const bannerImage = '/reducedSizeImages/background_homepage.webp';
+    const absoluteBannerUrl = `${window.location.origin}${bannerImage}`;
+
+    const metaTags = {
+      'meta[name="description"]': 'Explore the stunning before and after transformations of our gardening, landscaping, turfing, and tree surgery projects in Cambridge. Contact us to transform your garden today!',
+      'meta[property="og:title"]': 'Our Projects Gallery | Gardening & Landscaping in Cambridge - Cambridge Green Leaves',
+      'meta[property="og:description"]': 'Explore the stunning before and after transformations of our gardening, landscaping, turfing, and tree surgery projects in Cambridge. Contact us to transform your garden today!',
+      'meta[property="og:image"]': absoluteBannerUrl,
+      'meta[property="og:url"]': window.location.href,
+      'meta[name="twitter:title"]': 'Our Projects Gallery | Gardening & Landscaping in Cambridge - Cambridge Green Leaves',
+      'meta[name="twitter:description"]': 'Explore the stunning before and after transformations of our gardening, landscaping, turfing, and tree surgery projects in Cambridge. Contact us to transform your garden today!',
+      'meta[name="twitter:image"]': absoluteBannerUrl
+    };
+
+    Object.entries(metaTags).forEach(([selector, value]) => {
+      let el = document.querySelector(selector);
+      if (!el) {
+        const isOg = selector.includes('property=');
+        el = document.createElement('meta');
+        if (isOg) {
+          const propName = selector.match(/property="([^"]+)"/)?.[1];
+          if (propName) el.setAttribute('property', propName);
+        } else {
+          const nameValue = selector.match(/name="([^"]+)"/)?.[1];
+          if (nameValue) el.setAttribute('name', nameValue);
+        }
+        document.head.appendChild(el);
+      }
+      el.setAttribute('content', value);
+    });
+    
+    // 2. Dynamic Canonical Link Update
     const canonicalLink = document.querySelector('link[rel="canonical"]');
     if (canonicalLink) {
       canonicalLink.setAttribute('href', window.location.origin + window.location.pathname);
     }
+
+    // 3. Dynamic JSON-LD Breadcrumb Schema
+    const schemaId = 'dynamic-gallery-schema';
+    let scriptEl = document.getElementById(schemaId) as HTMLScriptElement;
+    if (!scriptEl) {
+      scriptEl = document.createElement('script');
+      scriptEl.id = schemaId;
+      scriptEl.type = 'application/ld+json';
+      document.head.appendChild(scriptEl);
+    }
+
+    const gallerySchema = {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": window.location.origin
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Gallery",
+          "item": window.location.href
+        }
+      ]
+    };
+
+    scriptEl.textContent = JSON.stringify(gallerySchema);
     
     fetchStats();
     window.scrollTo(0, 0);
+
+    // Cleanup Schema on unmount
+    return () => {
+      const el = document.getElementById(schemaId);
+      if (el) el.remove();
+    };
   }, []);
 
   useEffect(() => {

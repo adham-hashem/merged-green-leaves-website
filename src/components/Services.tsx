@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { api, getMediaUrl } from '../lib/api';
 import * as LucideIcons from 'lucide-react';
 
@@ -112,10 +112,10 @@ export default function Services() {
             
             if (localImage) {
               return (
-                <div
+                <Link
                   key={service.title}
-                  className="group relative h-48 sm:h-56 rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer"
-                  onClick={() => handleServiceClick(service.id, service.title)}
+                  to={service.id ? `/services/${service.id}` : '/#booking'}
+                  className="group relative h-48 sm:h-56 rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 block"
                 >
                   <img
                     src={localImage}
@@ -125,15 +125,15 @@ export default function Services() {
                   <div className="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition-colors flex items-end p-4">
                     <h3 className="text-lg sm:text-xl font-bold text-white">{service.title}</h3>
                   </div>
-                </div>
+                </Link>
               );
             } else {
               const IconComp = (LucideIcons as any)[service.icon_name || 'Leaf'] || LucideIcons.Leaf;
               return (
-                <div
+                <Link
                   key={service.title}
-                  className="group relative h-48 sm:h-56 rounded-2xl overflow-hidden shadow-md hover:shadow-xl bg-gradient-to-br from-green-700 via-emerald-800 to-teal-900 transition-all duration-300 cursor-pointer flex flex-col justify-between p-6"
-                  onClick={() => handleServiceClick(service.id, service.title)}
+                  to={service.id ? `/services/${service.id}` : '/#booking'}
+                  className="group relative h-48 sm:h-56 rounded-2xl overflow-hidden shadow-md hover:shadow-xl bg-gradient-to-br from-green-700 via-emerald-800 to-teal-900 transition-all duration-300 flex flex-col justify-between p-6"
                 >
                   <div className="flex justify-between items-start">
                     <div className="bg-white/10 p-3 rounded-xl text-yellow-300 group-hover:scale-110 transition-transform duration-300">
@@ -150,7 +150,7 @@ export default function Services() {
                       </p>
                     )}
                   </div>
-                </div>
+                </Link>
               );
             }
           })}

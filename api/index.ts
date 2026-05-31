@@ -330,6 +330,58 @@ app.post('/api/auth/login', async (req, res) => {
 });
 
 /* ==========================================================================
+   DYNAMIC SITEMAP ENDPOINT (SEO)
+   ========================================================================== */
+
+app.get('/api/sitemap.xml', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT id FROM services WHERE is_active = TRUE ORDER BY display_order');
+    const services = result.rows;
+
+    const baseUrl = 'https://www.cambridgegreenleaves.co.uk';
+    const lastModDate = new Date().toISOString().split('T')[0];
+
+    let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
+    xml += `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
+
+    // Core static pages
+    const staticPages = [
+      { path: '/', priority: '1.0', freq: 'daily' },
+      { path: '/before-after', priority: '0.8', freq: 'weekly' },
+      { path: '/privacy', priority: '0.3', freq: 'monthly' },
+      { path: '/terms', priority: '0.3', freq: 'monthly' }
+    ];
+
+    staticPages.forEach(p => {
+      xml += `  <url>\n`;
+      xml += `    <loc>${baseUrl}${p.path}</loc>\n`;
+      xml += `    <lastmod>${lastModDate}</lastmod>\n`;
+      xml += `    <changefreq>${p.freq}</changefreq>\n`;
+      xml += `    <priority>${p.priority}</priority>\n`;
+      xml += `  </url>\n`;
+    });
+
+    // Dynamic active service detail pages
+    services.forEach(s => {
+      xml += `  <url>\n`;
+      xml += `    <loc>${baseUrl}/services/${s.id}</loc>\n`;
+      xml += `    <lastmod>${lastModDate}</lastmod>\n`;
+      xml += `    <changefreq>weekly</changefreq>\n`;
+      xml += `    <priority>0.8</priority>\n`;
+      xml += `  </url>\n`;
+    });
+
+    xml += `</urlset>`;
+
+    res.header('Content-Type', 'application/xml');
+    return res.status(200).send(xml);
+  } catch (error: any) {
+    console.error('Error generating dynamic sitemap:', error);
+    return res.status(500).send('Error generating sitemap');
+  }
+});
+
+/* ==========================================================================
    SERVICES ENDPOINTS
    ========================================================================== */
 

@@ -31,6 +31,127 @@ export default function ServiceDetailPage() {
     }
   }, [id]);
 
+  useEffect(() => {
+    if (!service) return;
+
+    // 1. Update browser page title dynamically for SEO
+    document.title = `${service.title} Services in Cambridge | Cambridge Green Leaves`;
+
+    // 2. Setup dynamic WebP banner image mapping
+    const titleLower = service.title.toLowerCase().trim();
+    const bannerImage = service.image_url 
+      ? getMediaUrl(service.image_url) 
+      : (IMAGE_MAPPING[titleLower] || '/background_home.jpg');
+    const absoluteBannerUrl = bannerImage.startsWith('http') 
+      ? bannerImage 
+      : `${window.location.origin}${bannerImage}`;
+
+    // 3. Dynamic Meta Tags (Open Graph, Twitter, Description)
+    const metaTags = {
+      'meta[name="description"]': service.description || `Professional ${service.title} services in Cambridge and surrounding areas by Cambridge Green Leaves.`,
+      'meta[property="og:title"]': `${service.title} Services in Cambridge | Cambridge Green Leaves`,
+      'meta[property="og:description"]': service.description || `Professional ${service.title} services in Cambridge. Get a free quote today!`,
+      'meta[property="og:image"]': absoluteBannerUrl,
+      'meta[property="og:url"]': window.location.href,
+      'meta[name="twitter:title"]': `${service.title} Services in Cambridge | Cambridge Green Leaves`,
+      'meta[name="twitter:description"]': service.description || `Professional ${service.title} services in Cambridge. Get a free quote today!`,
+      'meta[name="twitter:image"]': absoluteBannerUrl
+    };
+
+    Object.entries(metaTags).forEach(([selector, value]) => {
+      let el = document.querySelector(selector);
+      if (!el) {
+        const isOg = selector.includes('property=');
+        el = document.createElement('meta');
+        if (isOg) {
+          const propName = selector.match(/property="([^"]+)"/)?.[1];
+          if (propName) el.setAttribute('property', propName);
+        } else {
+          const nameValue = selector.match(/name="([^"]+)"/)?.[1];
+          if (nameValue) el.setAttribute('name', nameValue);
+        }
+        document.head.appendChild(el);
+      }
+      el.setAttribute('content', value);
+    });
+
+    // 4. Dynamic Canonical Link Update
+    const canonicalLink = document.querySelector('link[rel="canonical"]');
+    if (canonicalLink) {
+      canonicalLink.setAttribute('href', window.location.origin + window.location.pathname);
+    }
+
+    // 5. Inject Structured Schema Markup (JSON-LD)
+    const schemaId = 'dynamic-service-schema';
+    let scriptEl = document.getElementById(schemaId) as HTMLScriptElement;
+    if (!scriptEl) {
+      scriptEl = document.createElement('script');
+      scriptEl.id = schemaId;
+      scriptEl.type = 'application/ld+json';
+      document.head.appendChild(scriptEl);
+    }
+
+    const serviceSchema = {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "name": "Home",
+              "item": window.location.origin
+            },
+            {
+              "@type": "ListItem",
+              "position": 2,
+              "name": "Services",
+              "item": `${window.location.origin}/#services`
+            },
+            {
+              "@type": "ListItem",
+              "position": 3,
+              "name": service.title,
+              "item": window.location.href
+            }
+          ]
+        },
+        {
+          "@type": "Service",
+          "name": service.title,
+          "description": service.description || `Professional ${service.title} services in Cambridge.`,
+          "provider": {
+            "@type": "HomeAndConstructionBusiness",
+            "name": "Cambridge Green Leaves",
+            "telephone": "+44 7961 228431",
+            "email": "greenleaves132@hotmail.co.uk",
+            "url": window.location.origin,
+            "logo": `${window.location.origin}/reducedSizeImages/logo_green_leaves.webp`
+          },
+          "areaServed": [
+            {
+              "@type": "AdministrativeArea",
+              "name": "Cambridge"
+            },
+            {
+              "@type": "AdministrativeArea",
+              "name": "Cambridgeshire"
+            }
+          ]
+        }
+      ]
+    };
+
+    scriptEl.textContent = JSON.stringify(serviceSchema);
+
+    // Cleanup Schema on dynamic page changes / unmount
+    return () => {
+      const el = document.getElementById(schemaId);
+      if (el) el.remove();
+    };
+  }, [service]);
+
   const fetchServiceDetail = async (serviceId: string) => {
     setLoading(true);
     setError('');
@@ -39,22 +160,6 @@ export default function ServiceDetailPage() {
       if (apiError) throw apiError;
       if (data) {
         setService(data);
-        
-        // Update browser page title dynamically for SEO
-        document.title = `${data.title} Services in Cambridge | Cambridge Green Leaves`;
-        const metaDesc = document.querySelector('meta[name="description"]');
-        if (metaDesc) {
-          metaDesc.setAttribute(
-            'content', 
-            data.description || `Professional ${data.title} services in Cambridge and surrounding areas by Cambridge Green Leaves.`
-          );
-        }
-        
-        // Dynamic Canonical Link Update
-        const canonicalLink = document.querySelector('link[rel="canonical"]');
-        if (canonicalLink) {
-          canonicalLink.setAttribute('href', window.location.origin + window.location.pathname);
-        }
       } else {
         setError('Service not found');
       }
