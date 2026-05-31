@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { api } from '../lib/api';
+import { api, getMediaUrl } from '../lib/api';
 import * as LucideIcons from 'lucide-react';
 
 interface ServiceItem {
@@ -9,6 +9,7 @@ interface ServiceItem {
   description?: string;
   icon_name?: string;
   image?: string;
+  image_url?: string | null;
 }
 
 const FALLBACK_SERVICES: ServiceItem[] = [
@@ -98,7 +99,9 @@ export default function Services() {
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 gap-6">
           {services.map((service) => {
             const titleLower = service.title.toLowerCase().trim();
-            const localImage = IMAGE_MAPPING[titleLower] || service.image;
+            const localImage = service.image_url
+              ? getMediaUrl(service.image_url)
+              : (IMAGE_MAPPING[titleLower] || service.image);
             
             if (localImage) {
               return (
