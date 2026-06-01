@@ -257,7 +257,7 @@ export default function BookingForm() {
               <input
                 type="text"
                 name="address"
-                placeholder="Address"
+                placeholder="Full Postal Address"
                 value={formData.address}
                 onChange={handleChange}
                 required
