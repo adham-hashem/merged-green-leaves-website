@@ -12,7 +12,7 @@ export default function Contact() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
           <a
             href="tel:07961228431"
-            className="group bg-gradient-to-br from-green-600 to-green-700 p-8 rounded-3xl hover:shadow-lg hover:shadow-green-500/50 transition-all"
+            className="group bg-gradient-to-br from-green-700 to-green-800 p-8 rounded-3xl hover:shadow-lg hover:shadow-green-500/50 transition-all"
           >
             <div className="flex items-start gap-4">
               <div className="bg-white/20 p-4 rounded-xl group-hover:bg-white/30 transition-colors">

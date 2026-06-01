@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { api, API_URL, getMediaUrl } from '../../lib/api';
 import { Trash2, Plus, Upload, Image as ImageIcon, Film, Edit } from 'lucide-react';
+import { compressImage } from '../../lib/imageCompression';
 
 interface Project {
   id: string;
@@ -77,7 +78,8 @@ export default function BeforeAfterManagement() {
     setError('');
 
     try {
-      const url = await uploadFile(file, fieldName);
+      const optimizedFile = await compressImage(file);
+      const url = await uploadFile(optimizedFile, fieldName);
       setFormData((prev) => ({ ...prev, [fieldName]: url }));
     } catch (err) {
       setError(`Failed to upload ${fieldName}: ${err instanceof Error ? err.message : 'Unknown error'}`);

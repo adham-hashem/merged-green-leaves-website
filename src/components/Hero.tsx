@@ -29,7 +29,7 @@ export default function Hero() {
         <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
           <button
             onClick={() => scrollToSection('booking')}
-            className="group inline-flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white px-6 py-3.5 sm:px-8 sm:py-4 rounded-full font-semibold transition-all shadow-lg hover:shadow-xl"
+            className="group inline-flex items-center justify-center gap-2 bg-green-700 hover:bg-green-800 text-white px-6 py-3.5 sm:px-8 sm:py-4 rounded-full font-semibold transition-all shadow-lg hover:shadow-xl"
           >
             Book a Service
             <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />

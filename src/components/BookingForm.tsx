@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { api, API_URL, getMediaUrl, Service } from '../lib/api';
 import { CheckCircle, Upload, X } from 'lucide-react';
+import { compressImage } from '../lib/imageCompression';
 
 export default function BookingForm() {
   const [formData, setFormData] = useState({
@@ -117,11 +118,12 @@ export default function BookingForm() {
 
     setUploading(true);
     try {
-      const fileExt = file.name.split('.').pop();
+      const optimizedFile = await compressImage(file);
+      const fileExt = optimizedFile.name.split('.').pop();
       const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
       const filePath = `booking-images/${fileName}`;
 
-      const { data: uploadData, error: uploadError } = await api.storage.upload('booking-uploads', file, filePath);
+      const { data: uploadData, error: uploadError } = await api.storage.upload('booking-uploads', optimizedFile, filePath);
 
       if (uploadError) throw new Error(uploadError.message);
 
@@ -271,6 +273,7 @@ export default function BookingForm() {
                 value={formData.service}
                 onChange={handleChange}
                 required
+                aria-label="Select a Service"
                 className="px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-green-500 transition-colors bg-white text-gray-800 font-medium"
               >
                 <option value="">Select a Service</option>
@@ -285,6 +288,7 @@ export default function BookingForm() {
                 name="budget"
                 value={formData.budget}
                 onChange={handleChange}
+                aria-label="Select Budget (Optional)"
                 className="px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-green-500 transition-colors bg-white text-gray-800 font-medium"
               >
                 <option value="">Select Budget (Optional)</option>
@@ -361,7 +365,7 @@ export default function BookingForm() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white font-semibold py-3 rounded-xl transition-colors"
+              className="w-full bg-green-700 hover:bg-green-800 disabled:bg-gray-400 text-white font-semibold py-3 rounded-xl transition-colors"
             >
               {isSubmitting ? 'Submitting...' : 'Book Service'}
             </button>

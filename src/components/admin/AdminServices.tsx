@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { api, getMediaUrl } from '../../lib/api';
 import { Plus, Trash2, CreditCard as Edit2, Save, X, Leaf, Upload } from 'lucide-react';
+import { compressImage } from '../../lib/imageCompression';
 
 interface Service {
   id: string;
@@ -80,11 +81,12 @@ export default function AdminServices() {
     setUploading(true);
     setUploadError('');
     try {
-      const fileExt = file.name.split('.').pop();
+      const optimizedFile = await compressImage(file);
+      const fileExt = optimizedFile.name.split('.').pop();
       const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
       const filePath = `service-banners/${fileName}`;
 
-      const { data: uploadData, error: uploadError } = await api.storage.upload('service-uploads', file, filePath);
+      const { data: uploadData, error: uploadError } = await api.storage.upload('service-uploads', optimizedFile, filePath);
 
       if (uploadError) throw new Error(uploadError.message);
 

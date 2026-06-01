@@ -255,7 +255,7 @@ export default function BeforeAfterPage() {
                   onClick={() => handleFilterTypeChange('all')}
                   className={`px-6 py-3 rounded-xl font-semibold transition-all flex items-center gap-2 ${
                     filterType === 'all'
-                      ? 'bg-green-600 text-white shadow-lg shadow-green-600/30'
+                      ? 'bg-green-700 text-white shadow-lg shadow-green-700/30'
                       : 'bg-white text-gray-700 hover:bg-gray-100 shadow'
                   }`}
                 >
@@ -266,7 +266,7 @@ export default function BeforeAfterPage() {
                   onClick={() => handleFilterTypeChange('images')}
                   className={`px-6 py-3 rounded-xl font-semibold transition-all flex items-center gap-2 ${
                     filterType === 'images'
-                      ? 'bg-green-600 text-white shadow-lg shadow-green-600/30'
+                      ? 'bg-green-700 text-white shadow-lg shadow-green-700/30'
                       : 'bg-white text-gray-700 hover:bg-gray-100 shadow'
                   }`}
                 >
@@ -280,7 +280,7 @@ export default function BeforeAfterPage() {
                 <button
                   onClick={() => setGridSize('large')}
                   className={`p-2 rounded-lg transition-colors ${
-                    gridSize === 'large' ? 'bg-green-600 text-white' : 'text-gray-600 hover:bg-gray-100'
+                    gridSize === 'large' ? 'bg-green-700 text-white' : 'text-gray-600 hover:bg-gray-100'
                   }`}
                   title="Large Cards"
                 >
@@ -289,7 +289,7 @@ export default function BeforeAfterPage() {
                 <button
                   onClick={() => setGridSize('small')}
                   className={`p-2 rounded-lg transition-colors ${
-                    gridSize === 'small' ? 'bg-green-600 text-white' : 'text-gray-600 hover:bg-gray-100'
+                    gridSize === 'small' ? 'bg-green-700 text-white' : 'text-gray-600 hover:bg-gray-100'
                   }`}
                   title="Small Cards"
                 >
@@ -359,7 +359,7 @@ export default function BeforeAfterPage() {
                       <div className="flex flex-col sm:flex-row gap-4 justify-center">
                         <Link
                           to="/"
-                          className="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-8 rounded-xl transition-all inline-flex items-center justify-center gap-2 shadow-lg hover:shadow-xl"
+                          className="bg-green-700 hover:bg-green-800 text-white font-bold py-3 px-8 rounded-xl transition-all inline-flex items-center justify-center gap-2 shadow-lg hover:shadow-xl"
                         >
                           <ArrowLeft size={20} />
                           Return Home
@@ -549,7 +549,7 @@ export default function BeforeAfterPage() {
                     onClick={() => setCurrentPage(i + 1)}
                     className={`w-10 h-10 rounded-xl font-bold transition-all text-sm ${
                       currentPage === i + 1
-                        ? 'bg-green-600 text-white shadow-lg shadow-green-600/30'
+                        ? 'bg-green-700 text-white shadow-lg shadow-green-700/30'
                         : 'bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 shadow-sm'
                     }`}
                   >
@@ -576,7 +576,7 @@ export default function BeforeAfterPage() {
                 </p>
                 <Link
                   to="/#booking"
-                  className="inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white font-bold py-4 px-8 rounded-xl transition-all shadow-lg hover:shadow-xl text-lg"
+                  className="inline-flex items-center gap-2 bg-green-700 hover:bg-green-800 text-white font-bold py-4 px-8 rounded-xl transition-all shadow-lg hover:shadow-xl text-lg"
                 >
                   <Leaf size={20} />
                   Book Your Free Consultation
@@ -643,7 +643,7 @@ export default function BeforeAfterPage() {
                 onClick={() => setLightboxTab('before')}
                 className={`flex-1 font-bold text-center py-2.5 rounded-lg text-sm transition-all ${
                   lightboxTab === 'before'
-                    ? 'bg-green-600 text-white shadow-lg shadow-green-600/30'
+                    ? 'bg-green-700 text-white shadow-lg shadow-green-700/30'
                     : 'text-gray-300 hover:text-white hover:bg-white/5'
                 }`}
               >
@@ -653,7 +653,7 @@ export default function BeforeAfterPage() {
                 onClick={() => setLightboxTab('after')}
                 className={`flex-1 font-bold text-center py-2.5 rounded-lg text-sm transition-all ${
                   lightboxTab === 'after'
-                    ? 'bg-green-600 text-white shadow-lg shadow-green-600/30'
+                    ? 'bg-green-700 text-white shadow-lg shadow-green-700/30'
                     : 'text-gray-300 hover:text-white hover:bg-white/5'
                 }`}
               >
