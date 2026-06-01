@@ -412,12 +412,12 @@ export default function BeforeAfterPage() {
                           {/* After Image (Bottom Layer) */}
                           <div className="absolute inset-0 w-full h-full">
                             <img
-                              src={getMediaUrl(project.after_image_url)}
+                              src={getMediaUrl(project.after_image_url, 800)}
                               alt=""
                               className="absolute inset-0 w-full h-full object-cover blur-md opacity-35 scale-105"
                             />
                             <img
-                              src={getMediaUrl(project.after_image_url)}
+                              src={getMediaUrl(project.after_image_url, 800)}
                               alt={`${project.title} - After Gardening/Landscaping transformation in Cambridge`}
                               className="absolute inset-0 w-full h-full object-contain z-10"
                             />
@@ -430,12 +430,12 @@ export default function BeforeAfterPage() {
                           >
                             <div className="absolute inset-0 w-full h-full bg-black">
                               <img
-                                src={getMediaUrl(project.before_image_url)}
+                                src={getMediaUrl(project.before_image_url, 800)}
                                 alt=""
                                 className="absolute inset-0 w-full h-full object-cover blur-md opacity-35 scale-105"
                               />
                               <img
-                                src={getMediaUrl(project.before_image_url)}
+                                src={getMediaUrl(project.before_image_url, 800)}
                                 alt={`${project.title} - Before Gardening/Landscaping transformation in Cambridge`}
                                 className="absolute inset-0 w-full h-full object-contain z-10"
                               />
@@ -620,7 +620,7 @@ export default function BeforeAfterPage() {
             <div className="flex-1 h-full max-h-[70vh] md:max-h-[75vh] w-full flex items-center justify-center overflow-hidden rounded-2xl relative select-none">
               <img
                 key={`${lightboxTab}-${activeLightboxProject.id}`}
-                src={getMediaUrl(lightboxTab === 'before' ? activeLightboxProject.before_image_url : activeLightboxProject.after_image_url)}
+                src={getMediaUrl(lightboxTab === 'before' ? activeLightboxProject.before_image_url : activeLightboxProject.after_image_url, 1200)}
                 alt={lightboxTab === 'before' ? `${activeLightboxProject.title} - Before Gardening/Landscaping transformation in Cambridge` : `${activeLightboxProject.title} - After Gardening/Landscaping transformation in Cambridge`}
                 className="max-w-full max-h-full object-contain rounded-lg shadow-2xl animate-in zoom-in-95 duration-300"
               />

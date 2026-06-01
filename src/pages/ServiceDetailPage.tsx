@@ -40,7 +40,7 @@ export default function ServiceDetailPage() {
     // 2. Setup dynamic WebP banner image mapping
     const titleLower = service.title.toLowerCase().trim();
     const bannerImage = service.image_url 
-      ? getMediaUrl(service.image_url) 
+      ? getMediaUrl(service.image_url, 1200) 
       : (IMAGE_MAPPING[titleLower] || '/background_home.jpg');
     const absoluteBannerUrl = bannerImage.startsWith('http') 
       ? bannerImage 
@@ -252,7 +252,7 @@ export default function ServiceDetailPage() {
   }
 
   const titleLower = service.title.toLowerCase().trim();
-  const bannerImage = service.image_url ? getMediaUrl(service.image_url) : (IMAGE_MAPPING[titleLower] || '/background_home.jpg');
+  const bannerImage = service.image_url ? getMediaUrl(service.image_url, 1200) : (IMAGE_MAPPING[titleLower] || '/background_home.jpg');
   const IconComponent = (LucideIcons as any)[service.icon_name || 'Leaf'] || LucideIcons.Leaf;
 
   return (

@@ -12,15 +12,32 @@ if (rawApiUrl && !rawApiUrl.startsWith('http://') && !rawApiUrl.startsWith('http
 
 export const API_URL = rawApiUrl;
 
-export const getMediaUrl = (url: string | undefined | null): string => {
+export const getMediaUrl = (url: string | undefined | null, width?: number): string => {
   if (!url) return '';
-  if (url.startsWith('http://') || url.startsWith('https://')) return url;
   
-  // Normalize path with leading slash
-  let formattedUrl = url.startsWith('/') ? url : `/${url}`;
+  let finalUrl = url;
+  if (!url.startsWith('http://') && !url.startsWith('https://')) {
+    // Normalize path with leading slash
+    let formattedUrl = url.startsWith('/') ? url : `/${url}`;
+    finalUrl = `${API_URL}${formattedUrl}`;
+  }
   
-  // Support mapping existing plural paths to singular if required by backend, but here we can keep the exact path returned
-  return `${API_URL}${formattedUrl}`;
+  // If it is a Supabase storage URL, we can optimize it dynamically!
+  if (finalUrl.includes('supabase.co/storage/v1/object/public/')) {
+    const pathPart = finalUrl.split('?')[0];
+    const extension = pathPart.substring(pathPart.lastIndexOf('.')).toLowerCase();
+    const IMAGE_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.webp', '.avif', '.heic', '.tiff', '.bmp', '.gif'];
+    
+    if (IMAGE_EXTENSIONS.includes(extension)) {
+      // Convert object/public/ to render/image/public/
+      const optimizedUrl = finalUrl.replace('/storage/v1/object/public/', '/storage/v1/render/image/public/');
+      const cleanUrl = optimizedUrl.split('?')[0];
+      const targetWidth = width || 800; // default optimized width
+      return `${cleanUrl}?width=${targetWidth}&quality=80`;
+    }
+  }
+  
+  return finalUrl;
 };
 
 // Entity Interfaces

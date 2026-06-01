@@ -107,7 +107,7 @@ export default function Services() {
           {services.map((service) => {
             const titleLower = service.title.toLowerCase().trim();
             const localImage = service.image_url
-              ? getMediaUrl(service.image_url)
+              ? getMediaUrl(service.image_url, 600)
               : (IMAGE_MAPPING[titleLower] || service.image);
             
             if (localImage) {

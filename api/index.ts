@@ -993,11 +993,12 @@ app.post('/api/upload', upload.single('file'), async (req, res) => {
       ? (customPath.endsWith('/') ? `${customPath}${cleanFileName}` : customPath)
       : cleanFileName;
 
-    // Upload to Supabase Storage bucket
+    // Upload to Supabase Storage bucket with 1-year cache control
     const { data, error } = await supabase.storage
       .from(bucket)
       .upload(filePath, req.file.buffer, {
         contentType: req.file.mimetype,
+        cacheControl: '31536000',
         upsert: true
       });
 
