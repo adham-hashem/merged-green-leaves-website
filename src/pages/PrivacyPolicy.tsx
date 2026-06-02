@@ -130,7 +130,7 @@ export default function PrivacyPolicy() {
                     </a>
                     <div className="flex items-center gap-3">
                       <MapPin className="text-green-600 w-5 h-5 flex-shrink-0" />
-                      <span>Cambridge, United Kingdom</span>
+                      <span>132 Flamsteed Close, Cambridge, CB1 3FE</span>
                     </div>
                   </div>
                 </section>

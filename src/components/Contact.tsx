@@ -49,9 +49,9 @@ export default function Contact() {
               <MapPin className="text-white" size={32} />
             </div>
             <div>
-              <h3 className="text-xl font-semibold mb-2">Service Area</h3>
-              <p className="text-gray-300 text-lg">Cambridge and surrounding areas</p>
-              <p className="text-gray-400 text-sm mt-1">Available for commercial and residential projects</p>
+              <h3 className="text-xl font-semibold mb-2">Our Location & Service Area</h3>
+              <p className="text-gray-300 text-lg">132 Flamsteed Close, Cambridge, CB1 3FE</p>
+              <p className="text-gray-400 text-sm mt-1">Serving Cambridge and surrounding areas | Commercial & residential projects</p>
             </div>
           </div>
         </div>
