@@ -1,4 +1,4 @@
-import { Phone, Mail, MapPin } from 'lucide-react';
+import { Phone, Mail, MapPin, Star, ExternalLink } from 'lucide-react';
 
 export default function Contact() {
   return (
@@ -43,17 +43,58 @@ export default function Contact() {
           </a>
         </div>
 
-        <div className="mt-12 p-8 bg-white/10 backdrop-blur rounded-3xl border border-white/20">
-          <div className="flex items-start gap-4">
-            <div className="bg-white/20 p-4 rounded-xl">
+        <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-8">
+          {/* Location details card */}
+          <div className="p-8 bg-white/10 backdrop-blur rounded-3xl border border-white/20 flex items-start gap-4 shadow-lg">
+            <div className="bg-white/20 p-4 rounded-xl flex-shrink-0">
               <MapPin className="text-white" size={32} />
             </div>
             <div>
               <h3 className="text-xl font-semibold mb-2">Our Location & Service Area</h3>
               <p className="text-gray-300 text-lg">132 Flamsteed Close, Cambridge, CB1 3FE</p>
-              <p className="text-gray-400 text-sm mt-1">Serving Cambridge and surrounding areas | Commercial & residential projects</p>
+              <p className="text-gray-400 text-sm mt-2">Serving Cambridge and surrounding areas | Commercial & residential projects</p>
             </div>
           </div>
+
+          {/* Eye-catching Google Review Card */}
+          <a
+            href="https://g.page/r/CXnFitKlbSsjEAE/review"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group relative p-8 bg-gray-950/90 rounded-3xl border-2 border-yellow-400/40 hover:border-yellow-400/90 shadow-xl shadow-yellow-500/5 hover:shadow-yellow-500/20 transition-all duration-300 flex flex-col justify-between overflow-hidden"
+          >
+            {/* Radial background glow on hover */}
+            <div className="absolute top-0 right-0 w-32 h-32 bg-yellow-400/10 rounded-full blur-2xl group-hover:bg-yellow-400/20 transition-all duration-500 -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
+            
+            <div className="space-y-4 relative z-10">
+              <div className="flex items-center gap-1">
+                {[...Array(5)].map((_, i) => (
+                  <Star
+                    key={i}
+                    className="w-6 h-6 fill-yellow-400 text-yellow-400 animate-pulse"
+                    style={{ animationDelay: `${i * 150}ms`, animationDuration: '2s' }}
+                  />
+                ))}
+              </div>
+              
+              <div>
+                <h3 className="text-2xl font-bold text-white mb-2 group-hover:text-yellow-400 transition-colors">
+                  Review Us on Google
+                </h3>
+                <p className="text-gray-300 text-sm leading-relaxed">
+                  Have we recently transformed your garden or landscaping? We would love to hear your feedback! Your reviews help others find us and support our local team in Cambridge.
+                </p>
+              </div>
+            </div>
+            
+            <div className="mt-6 flex items-center justify-between relative z-10">
+              <span className="text-gray-400 text-xs font-semibold">Takes under 1 minute</span>
+              <span className="inline-flex items-center gap-2 bg-yellow-400 hover:bg-yellow-500 text-gray-900 px-5 py-2.5 rounded-full font-bold text-sm shadow-md transition-transform transform group-hover:scale-105 duration-300">
+                <span>Leave a Review</span>
+                <ExternalLink size={16} />
+              </span>
+            </div>
+          </a>
         </div>
 
         <div className="mt-12 text-center">

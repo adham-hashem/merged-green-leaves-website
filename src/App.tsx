@@ -11,6 +11,7 @@ import Footer from './components/Footer';
 
 // Lazy load heavy pages for better performance
 const BeforeAfterPage = lazy(() => import('./pages/BeforeAfterPage'));
+const AboutPage = lazy(() => import('./pages/AboutPage'));
 const AdminLogin = lazy(() => import('./pages/AdminLogin'));
 const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
 const ServiceDetailPage = lazy(() => import('./pages/ServiceDetailPage'));
@@ -137,6 +138,14 @@ function App() {
             element={
               <Suspense fallback={<PageLoader />}>
                 <AdminDashboard />
+              </Suspense>
+            }
+          />
+          <Route
+            path="/about"
+            element={
+              <Suspense fallback={<PageLoader />}>
+                <AboutPage />
               </Suspense>
             }
           />

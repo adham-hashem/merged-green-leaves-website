@@ -14,46 +14,59 @@ export default function Footer() {
               <span className="font-bold text-white">Cambridge Green Leaves</span>
             </div>
             <p className="text-sm">Professional gardening and landscaping services in Cambridge.</p>
+            <div className="mt-4">
+              <a
+                href="https://g.page/r/CXnFitKlbSsjEAE/review"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group inline-flex items-center gap-3 bg-white/5 hover:bg-yellow-400 hover:text-gray-950 text-white text-xs font-bold px-4 py-2.5 rounded-xl border border-white/10 transition-all duration-300 shadow-md"
+              >
+                <span className="text-yellow-400 group-hover:text-gray-950 transition-colors duration-300 tracking-wider">
+                  ★ ★ ★ ★ ★
+                </span>
+                <span>Review us on Google</span>
+              </a>
+            </div>
           </div>
 
           <div>
             <h4 className="font-semibold text-white mb-4">Services</h4>
             <ul className="text-sm space-y-2">
               <li>
-                <a href="#services" className="hover:text-green-400 transition-colors">
+                <Link to="/#services" className="hover:text-green-400 transition-colors">
                   Landscaping
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#services" className="hover:text-green-400 transition-colors">
+                <Link to="/#services" className="hover:text-green-400 transition-colors">
                   Tree Surgery
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#services" className="hover:text-green-400 transition-colors">
+                <Link to="/#services" className="hover:text-green-400 transition-colors">
                   Garden Design
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
-
+ 
           <div>
             <h4 className="font-semibold text-white mb-4">Company</h4>
             <ul className="text-sm space-y-2">
               <li>
-                <a href="#home" className="hover:text-green-400 transition-colors">
+                <Link to="/" className="hover:text-green-400 transition-colors">
                   Home
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#about" className="hover:text-green-400 transition-colors">
+                <Link to="/about" className="hover:text-green-400 transition-colors">
                   About Us
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#contact" className="hover:text-green-400 transition-colors">
+                <Link to="/#contact" className="hover:text-green-400 transition-colors">
                   Contact
-                </a>
+                </Link>
               </li>
             </ul>
           </div>

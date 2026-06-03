@@ -27,6 +27,7 @@ export default function Header({ activeSection = '' }: HeaderProps) {
 
   const navItems = [
     { label: 'Home', id: 'home', type: 'scroll' as const },
+    { label: 'About Us', path: '/about', type: 'link' as const },
     { label: 'Services', id: 'services', type: 'scroll' as const },
     { label: 'Book a Service', id: 'booking', type: 'scroll' as const },
     { label: 'Before & After', path: '/before-after', type: 'link' as const },
@@ -34,7 +35,7 @@ export default function Header({ activeSection = '' }: HeaderProps) {
   ];
 
   const isActive = (item: typeof navItems[0]) => {
-    if (item.type === 'link' && location.pathname === '/before-after') return true;
+    if (item.type === 'link' && location.pathname === item.path) return true;
     if (item.type === 'scroll' && activeSection === item.id) return true;
     return false;
   };
