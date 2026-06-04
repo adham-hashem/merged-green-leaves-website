@@ -29,6 +29,7 @@ export default function Header({ activeSection = '' }: HeaderProps) {
     { label: 'Home', id: 'home', type: 'scroll' as const },
     { label: 'About Us', path: '/about', type: 'link' as const },
     { label: 'Services', id: 'services', type: 'scroll' as const },
+    { label: 'Our Works', path: '/works', type: 'link' as const },
     { label: 'Book a Service', id: 'booking', type: 'scroll' as const },
     { label: 'Before & After', path: '/before-after', type: 'link' as const },
     { label: 'Contact', id: 'contact', type: 'scroll' as const },

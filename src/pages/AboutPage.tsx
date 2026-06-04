@@ -26,9 +26,9 @@ export default function AboutPage() {
   }, []);
 
   const stats = [
-    { value: '7+', label: 'Years of Experience' },
-    { value: '500+', label: 'Happy Customers' },
-    { value: '100%', label: 'Satisfaction Rate' },
+    { value: '6+', label: 'Years of Experience' },
+    // { value: '500+', label: 'Happy Customers' },
+    // { value: '100%', label: 'Satisfaction Rate' },
     { value: 'Fully', label: 'Insured & Certified' },
   ];
 

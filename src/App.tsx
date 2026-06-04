@@ -9,6 +9,8 @@ import BookingForm from './components/BookingForm';
 import Contact from './components/Contact';
 import Footer from './components/Footer';
 
+import WorksCarousel from './components/WorksCarousel';
+
 // Lazy load heavy pages for better performance
 const BeforeAfterPage = lazy(() => import('./pages/BeforeAfterPage'));
 const AboutPage = lazy(() => import('./pages/AboutPage'));
@@ -17,6 +19,7 @@ const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
 const ServiceDetailPage = lazy(() => import('./pages/ServiceDetailPage'));
 const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicy'));
 const TermsOfService = lazy(() => import('./pages/TermsOfService'));
+const WorksPage = lazy(() => import('./pages/WorksPage'));
 
 // Loading spinner component
 const PageLoader = () => (
@@ -91,6 +94,9 @@ function PublicSite() {
         <section id="services" className="scroll-mt-[72px]">
           <Services />
         </section>
+        <section id="works" className="scroll-mt-[72px]">
+          <WorksCarousel />
+        </section>
         <section id="booking" className="scroll-mt-[72px]">
           <BookingForm />
         </section>
@@ -109,6 +115,14 @@ function App() {
       <AdminAuthProvider>
         <Routes>
           <Route path="/" element={<PublicSite />} />
+          <Route
+            path="/works"
+            element={
+              <Suspense fallback={<PageLoader />}>
+                <WorksPage />
+              </Suspense>
+            }
+          />
           <Route
             path="/before-after"
             element={
