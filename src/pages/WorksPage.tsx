@@ -13,6 +13,14 @@ export default function WorksPage() {
   const [activeProject, setActiveProject] = useState<WorkProject | null>(null);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
 
+  // Helper to prepend import.meta.env.BASE_URL so images load properly in subfolders/all platforms
+  const resolveAssetUrl = (path: string) => {
+    const base = import.meta.env.BASE_URL || '/';
+    const cleanPath = path.startsWith('/') ? path.slice(1) : path;
+    const cleanBase = base.endsWith('/') ? base : `${base}/`;
+    return `${cleanBase}${cleanPath}`;
+  };
+
   // SEO and Head updates
   useEffect(() => {
     document.title = "Our Works Portfolio | Cambridge Green Leaves - Landscaping & Gardening Gallery";
@@ -169,7 +177,7 @@ export default function WorksPage() {
                       onClick={() => handleOpenLightbox(project, 0)}
                     >
                       <img
-                        src={project.mainImage}
+                        src={resolveAssetUrl(project.mainImage)}
                         alt={`${project.title} - Cambridge landscaping`}
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
                         loading="lazy"
@@ -226,7 +234,7 @@ export default function WorksPage() {
                                 onClick={() => handleOpenLightbox(project, idx)}
                                 className="relative w-12 h-12 rounded-lg overflow-hidden border border-gray-200 hover:border-green-600 transition-all flex-shrink-0 cursor-pointer"
                               >
-                                <img src={img} alt="" className="w-full h-full object-cover" />
+                                <img src={resolveAssetUrl(img)} alt="" className="w-full h-full object-cover" />
                               </button>
                             ))}
                           </div>
@@ -292,7 +300,7 @@ export default function WorksPage() {
             >
               <img
                 key={`${activeProject.id}-${activeImageIndex}`}
-                src={activeProject.images[activeImageIndex]}
+                src={resolveAssetUrl(activeProject.images[activeImageIndex])}
                 alt={`${activeProject.title} - view`}
                 className="max-w-full max-h-full object-contain rounded-lg shadow-2xl animate-in zoom-in-95 duration-450"
               />
@@ -333,7 +341,7 @@ export default function WorksPage() {
                         isCurrent ? 'border-yellow-400 scale-110 shadow-lg' : 'border-white/20 hover:border-white/50 opacity-60 hover:opacity-90'
                       }`}
                     >
-                      <img src={img} alt="" className="w-full h-full object-cover" />
+                      <img src={resolveAssetUrl(img)} alt="" className="w-full h-full object-cover" />
                     </button>
                   );
                 })}

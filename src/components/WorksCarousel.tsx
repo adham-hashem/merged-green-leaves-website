@@ -10,12 +10,48 @@ export default function WorksCarousel() {
   const [isHovered, setIsHovered] = useState(false);
   const autoPlayTimer = useRef<any>(null);
 
+  // Swipe gesture detection refs
+  const touchStartX = useRef<number | null>(null);
+  const touchEndX = useRef<number | null>(null);
+  const minSwipeDistance = 50;
+
   const nextSlide = () => {
     setActiveIndex((prevIndex) => (prevIndex + 1) % carouselProjects.length);
   };
 
   const prevSlide = () => {
     setActiveIndex((prevIndex) => (prevIndex - 1 + carouselProjects.length) % carouselProjects.length);
+  };
+
+  // Touch Swipe Handlers
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchEndX.current = null;
+    touchStartX.current = e.touches[0].clientX;
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    touchEndX.current = e.touches[0].clientX;
+  };
+
+  const handleTouchEnd = () => {
+    if (!touchStartX.current || !touchEndX.current) return;
+    const distance = touchStartX.current - touchEndX.current;
+    const isLeftSwipe = distance > minSwipeDistance;
+    const isRightSwipe = distance < -minSwipeDistance;
+
+    if (isLeftSwipe) {
+      nextSlide();
+    } else if (isRightSwipe) {
+      prevSlide();
+    }
+  };
+
+  // Helper to prepend import.meta.env.BASE_URL so images load properly in subfolders/all platforms
+  const resolveAssetUrl = (path: string) => {
+    const base = import.meta.env.BASE_URL || '/';
+    const cleanPath = path.startsWith('/') ? path.slice(1) : path;
+    const cleanBase = base.endsWith('/') ? base : `${base}/`;
+    return `${cleanBase}${cleanPath}`;
   };
 
   // Autoplay functionality
@@ -59,9 +95,12 @@ export default function WorksCarousel() {
 
         {/* Carousel Container */}
         <div 
-          className="relative w-full aspect-[4/3] sm:aspect-[16/9] md:max-h-[550px] rounded-3xl overflow-hidden shadow-2xl border-4 border-white/80 bg-gray-950 group"
+          className="relative w-full aspect-[4/3] sm:aspect-[16/9] md:max-h-[550px] rounded-3xl overflow-hidden shadow-2xl border-4 border-white/80 bg-gray-950 group cursor-grab active:cursor-grabbing"
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
         >
           {/* Slides */}
           {carouselProjects.map((project, index) => {
@@ -77,7 +116,7 @@ export default function WorksCarousel() {
               >
                 {/* Background Image */}
                 <img
-                  src={project.mainImage}
+                  src={resolveAssetUrl(project.mainImage)}
                   alt={`${project.title} - Gardening transformation in Cambridge`}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
                   loading="lazy"
