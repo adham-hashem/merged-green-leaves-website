@@ -1,4 +1,4 @@
-import { Phone, Mail, MapPin, Star, ExternalLink } from 'lucide-react';
+import { Phone, Mail, MapPin, Star, ExternalLink, Facebook } from 'lucide-react';
 
 export default function Contact() {
   return (
@@ -9,10 +9,10 @@ export default function Contact() {
           <p className="text-lg text-gray-300">Contact us today for a free consultation</p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <a
             href="tel:07961228431"
-            className="group bg-gradient-to-br from-green-700 to-green-800 p-8 rounded-3xl hover:shadow-lg hover:shadow-green-500/50 transition-all"
+            className="group bg-gradient-to-br from-green-700 to-green-800 p-8 rounded-3xl hover:shadow-lg hover:shadow-green-500/50 transition-all flex flex-col justify-between"
           >
             <div className="flex items-start gap-4">
               <div className="bg-white/20 p-4 rounded-xl group-hover:bg-white/30 transition-colors">
@@ -28,7 +28,7 @@ export default function Contact() {
 
           <a
             href="mailto:greenleaves132@hotmail.co.uk"
-            className="group bg-gradient-to-br from-yellow-500 to-yellow-600 p-8 rounded-3xl hover:shadow-lg hover:shadow-yellow-500/50 transition-all"
+            className="group bg-gradient-to-br from-yellow-500 to-yellow-600 p-8 rounded-3xl hover:shadow-lg hover:shadow-yellow-500/50 transition-all flex flex-col justify-between"
           >
             <div className="flex items-start gap-4">
               <div className="bg-white/20 p-4 rounded-xl group-hover:bg-white/30 transition-colors">
@@ -36,8 +36,25 @@ export default function Contact() {
               </div>
               <div>
                 <h3 className="text-xl font-semibold mb-2">Email</h3>
-                <p className="text-yellow-50 text-lg font-medium">greenleaves132@</p>
-                <p className="text-yellow-50 text-lg font-medium">hotmail.co.uk</p>
+                <p className="text-yellow-50 text-lg font-medium break-all">greenleaves132@hotmail.co.uk</p>
+              </div>
+            </div>
+          </a>
+
+          <a
+            href="https://www.facebook.com/greenleavesgardness"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group bg-gradient-to-br from-blue-700 to-blue-800 p-8 rounded-3xl hover:shadow-lg hover:shadow-blue-500/50 transition-all flex flex-col justify-between"
+          >
+            <div className="flex items-start gap-4">
+              <div className="bg-white/20 p-4 rounded-xl group-hover:bg-white/30 transition-colors">
+                <Facebook className="text-white" size={32} />
+              </div>
+              <div>
+                <h3 className="text-xl font-semibold mb-2">Facebook</h3>
+                <p className="text-blue-50 text-lg font-medium break-all">greenleavesgardness</p>
+                <p className="text-blue-200 text-sm mt-1">Visit our page</p>
               </div>
             </div>
           </a>
