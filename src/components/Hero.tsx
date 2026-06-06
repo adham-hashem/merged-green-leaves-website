@@ -10,10 +10,7 @@ export default function Hero() {
 
   return (
     <div
-      className="relative w-full min-h-[calc(100vh-72px)] flex flex-col justify-center items-center overflow-hidden bg-[#04200e] bg-no-repeat bg-cover bg-[position:85%_center] pt-4 pb-20 md:py-0"
-      style={{
-        backgroundImage: 'url("/reducedSizeImages/background_homepage.webp")',
-      }}
+      className="relative w-full min-h-[calc(100vh-72px)] flex flex-col justify-center items-center overflow-hidden bg-[#04200e] bg-no-repeat bg-cover bg-center md:bg-[position:85%_center] pt-4 pb-20 md:py-0 bg-hero-mobile md:bg-hero-desktop"
     >
       <div className="absolute inset-0 bg-black/40" />
 
