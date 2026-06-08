@@ -10,6 +10,7 @@ import Contact from './components/Contact';
 import Footer from './components/Footer';
 
 import WorksCarousel from './components/WorksCarousel';
+import GardenCareTips from './components/GardenCareTips';
 
 // Lazy load heavy pages for better performance
 const BeforeAfterPage = lazy(() => import('./pages/BeforeAfterPage'));
@@ -90,6 +91,7 @@ function PublicSite() {
       <main>
         <section id="home" className="scroll-mt-[72px]">
           <Hero />
+          <GardenCareTips />
         </section>
         <section id="services" className="scroll-mt-[72px]">
           <Services />
